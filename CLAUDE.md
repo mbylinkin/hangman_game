@@ -19,6 +19,8 @@ pytest tests/model/test_game_play.py::test_game_play_turn_guessed_letter   # sin
 make lint                          # pre-commit run --all-files: ruff check --fix, ruff format, mypy (config in ruff.toml)
 ```
 
+CI (`.github/workflows/ci.yml`) runs the same pre-commit hooks and `pytest --cov=app` on Python 3.10, 3.12 and 3.13 for every PR and push to `main`.
+
 ## Architecture
 
 Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController` (`app/controller.py`) → `Game`/`GameTurn` (`app/model.py`) and `ConsoleView` (`app/view.py`).
