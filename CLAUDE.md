@@ -23,8 +23,9 @@ CI (`.github/workflows/ci.yml`) runs the same pre-commit hooks and `pytest --cov
 
 Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController` (`app/controller.py`) → `Game`/`GameTurn` (`app/model.py`) and `ConsoleView` (`app/view.py`).
 
-- `GameApplication.loop()` asks "Start new game?" and `play_game()` drives each turn: `start_next_turn()` → `render()` → `input_letter()` → `play_turn()`, until `game_pending()` is false. `get_game_controller()` is the seam for swapping in a different (e.g. GUI) controller.
-- `BaseGameController` holds the `Game` and a `BaseView`; subclasses implement `input_letter()` (console version allows `MAX_LETTER_INPUT_TRIES` invalid attempts, then returns the sentinel `"*"`).
+- All user input/output goes through `BaseView` (`render`, `ask_new_game`, `ask_letter`, `show_message`); `ConsoleView` is the only place with `input()`/`print()`. Keep it that way — controller, model and `main.py` must stay console-free.
+- `GameApplication.loop()` repeats `play_game()` while `controller.ask_new_game()`; `play_game()` drives each turn: `start_next_turn()` → `render()` → `input_letter()` → `play_turn()`, until `game_pending()` is false. The controller is injected via `GameApplication(vocabulary, controller=...)`, defaulting to `get_game_controller()`.
+- `BaseGameController(view)` holds the `Game` and the view and works with any `BaseView`. `input_letter()` asks the view up to `MAX_LETTER_INPUT_TRIES` times, shows validation messages via `view.show_message`, then returns the sentinel `"*"` (counted as a wrong guess). `ConsoleGameController` only binds `ConsoleView`.
 - Model state is split: `Game` keeps `current_word` / `errors`, and each `GameTurn` gets a deep copy of them, mutates its own copy in `play()`, and `Game.play_turn()` copies the result back. `GameTurn.new_turn()` builds the next turn from the previous one; `Game.state()` is computed from `current_turn`, while `validate_letter()` reads `Game.errors` / `Game.current_word` — keep both in sync when changing the model.
 - `GameState` (`app/const.py`): `LOST` = `MAX_GUESS_ERRORS` reached, `WON` = player guessed the word. Hidden letters are `_` in `current_word`.
 - `ConsoleView` renders Jinja2 string templates from `app/templates.py`; the hangman drawing is looked up by error count in `head_ascii`/`body_ascii`/`legs_ascii` (keys 0..6, tied to `MAX_GUESS_ERRORS`).
@@ -32,4 +33,4 @@ Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController`
 
 ## Tests
 
-`tests/` mirrors the modules (`controller/`, `input/`, `main/`, `model/`). Console input is faked with `mock.patch("builtins.input", side_effect=[...])`; file reading is mocked via `mocker.patch('app.input.read_words_from_file', ...)` (pytest-mock). The `name-tests-test` pre-commit hook requires test files to be named `test_*.py`.
+`tests/` mirrors the modules (`controller/`, `input/`, `main/`, `model/`, `view/`). Controller/application tests use `FakeView` from `tests/conftest.py` (`fake_view` fixture: preset `new_game_answers`/`letters`, recorded `messages`/`rendered_states`); only `ConsoleView` tests and the console end-to-end tests in `tests/main` patch `builtins.input`. File reading is mocked via `mocker.patch('app.input.read_words_from_file', ...)` (pytest-mock). The `name-tests-test` pre-commit hook requires every file in `tests/` except `conftest.py`/`__init__.py` to be named `test_*.py` — shared test helpers go into `conftest.py`.

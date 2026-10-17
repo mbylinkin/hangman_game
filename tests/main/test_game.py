@@ -7,8 +7,10 @@ from pytest_mock.plugin import MockerFixture
 
 from app import controller
 from app.const import GameState
+from app.controller import BaseGameController
 from app.input import WordVocabulary
 from app.main import GameApplication
+from tests.conftest import FakeView
 
 
 @pytest.fixture
@@ -77,3 +79,19 @@ def test_loop_plays_until_not_yes(
     with mock.patch("builtins.input", side_effect=answers):
         game_app_fixture.loop()
     assert play_game_mock.call_count == games_played
+
+
+def test_game_application_with_injected_controller(mocker: MockerFixture, fake_view: FakeView) -> None:
+    """
+    The whole game runs through the view interface, without console input/output.
+    """
+    mocker.patch('app.input.read_words_from_file', return_value=['test'])
+    app = GameApplication(WordVocabulary('words.txt'), controller=BaseGameController(fake_view))
+    fake_view.new_game_answers = [True, False]
+    fake_view.letters = ["t", "x", "e", "s"]
+    with mock.patch("builtins.input", side_effect=AssertionError("console input used")):
+        app.loop()
+    assert fake_view.rendered_states[-1] == GameState.WON
+    assert fake_view.new_game_answers == []
+    assert fake_view.letters == []
+    assert fake_view.messages == []

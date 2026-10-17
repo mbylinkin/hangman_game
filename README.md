@@ -104,13 +104,16 @@ make lint
 
 ## Further development
 
-Application is written for console mode, but due to MVC pattern game logic, client view is separated from each other.
+Application is written for console mode, but due to MVC pattern game logic and user interface are separated:
+all user input and output goes through the view interface `BaseView` (`render`, `ask_new_game`, `ask_letter`, `show_message`),
+the controller and the game model do not use the console.
 
-So, It is possible to write classes:
-* GUIGameController
-* GUIView
+So, to add a GUI it is enough to write a `GUIView(BaseView)` class and run the game with it:
+```python
+GameApplication(vocabulary, controller=BaseGameController(GUIView()))
+```
 
-and implement GameApplication class with new controller (GUIGameController)
+The controller asks the view for input and waits for the answer, which fits GUI libraries with a blocking read loop (like PySimpleGUI `window.read()`).
 
 An example of GUI can be taken [from here](https://realpython.com/hangman-python-pysimplegui/).
 
