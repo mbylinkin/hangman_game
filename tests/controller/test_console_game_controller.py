@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from app.const import GameState
 from app.const import MAX_GUESS_ERRORS
 from app.controller import ConsoleGameController
@@ -15,13 +17,13 @@ def test_game_controller_init(controller: ConsoleGameController) -> None:
 def test_game_controller_start_game(controller: ConsoleGameController) -> None:
     controller.start_game("test")
     assert isinstance(controller.current_game, Game)
-    assert controller.current_game.secret_word == "test"
+    assert controller.game.secret_word == "test"
 
 
 def test_game_controller_play_turn(started_controller: ConsoleGameController) -> None:
     started_controller.start_next_turn()
     game_state = started_controller.play_turn("t")
-    current_turn = started_controller.current_game.get_current_turn()
+    current_turn = started_controller.game.turn
     assert game_state == GameState.ONGOING
     assert current_turn.secret_word == "test"
     assert current_turn.current_word == "t__t"
@@ -38,19 +40,24 @@ def test_game_controller_game_state_after_turn(started_controller: ConsoleGameCo
     assert started_controller.game_pending()
 
 
-def test_game_controller_game_state_after_end_player_1_wins(controller: ConsoleGameController) -> None:
+def test_game_controller_game_state_after_end_lost(controller: ConsoleGameController) -> None:
     controller.start_game("o")
     for letter in "abcdefghijklmn"[:MAX_GUESS_ERRORS]:
         assert controller.game_pending()
         controller.start_next_turn()
         controller.play_turn(letter)
     assert not controller.game_pending()
-    assert controller.game_state() == GameState.PLAYER_1_WINS
+    assert controller.game_state() == GameState.LOST
 
 
-def test_game_controller_game_state_after_end_player_2_wins(controller: ConsoleGameController) -> None:
+def test_game_controller_game_state_after_end_won(controller: ConsoleGameController) -> None:
     controller.start_game("t")
     controller.start_next_turn()
     controller.play_turn("t")
     assert not controller.game_pending()
-    assert controller.game_state() == GameState.PLAYER_2_WINS
+    assert controller.game_state() == GameState.WON
+
+
+def test_game_controller_game_not_started(controller: ConsoleGameController) -> None:
+    with pytest.raises(RuntimeError, match='Game is not started'):
+        controller.game_pending()

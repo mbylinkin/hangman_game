@@ -6,14 +6,14 @@ from app.const import GameState
 from app.const import MAX_GUESS_ERRORS
 
 
-def game_state_check(game_turn: GameTurn) -> GameState:
+def game_state_check(game_turn: GameTurn | None) -> GameState:
     """Check game state and return corresponding constant."""
     if game_turn is None:
         return GameState.ONGOING
     if len(game_turn.errors) >= MAX_GUESS_ERRORS:
-        return GameState.PLAYER_1_WINS
+        return GameState.LOST
     if game_turn.current_word.find("_") == -1:
-        return GameState.PLAYER_2_WINS
+        return GameState.WON
     return GameState.ONGOING
 
 
@@ -62,7 +62,14 @@ class Game:
         self.secret_word = secret_word
         self.current_word = "_" * len(secret_word)
         self.errors: list[str] = []
-        self.current_turn: GameTurn = None  # type: ignore
+        self.current_turn: GameTurn | None = None
+
+    @property
+    def turn(self) -> GameTurn:
+        """Current turn; raises if no turn is started."""
+        if self.current_turn is None:
+            raise RuntimeError('Turn is not started, call start_next_turn() first.')
+        return self.current_turn
 
     def start_next_turn(self) -> None:
         if self.current_turn is not None:
@@ -76,8 +83,8 @@ class Game:
             )
 
     def play_turn(self, guess_letter: str) -> GameState:
-        self.current_word, self.errors = self.current_turn.play(guess_letter)
-        self.turn_history.append(self.current_turn)
+        self.current_word, self.errors = self.turn.play(guess_letter)
+        self.turn_history.append(self.turn)
         return self.state()
 
     def state(self) -> GameState:
@@ -86,5 +93,5 @@ class Game:
         """
         return game_state_check(self.current_turn)
 
-    def get_current_turn(self) -> GameTurn:
+    def get_current_turn(self) -> GameTurn | None:
         return self.current_turn

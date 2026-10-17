@@ -12,5 +12,5 @@ class GameState(Enum):
     """Game states."""
 
     ONGOING = "Ongoing"
-    PLAYER_1_WINS = "Player 1 wins!"
-    PLAYER_2_WINS = "Player 2 wins!"
+    WON = "Won"
+    LOST = "Lost"

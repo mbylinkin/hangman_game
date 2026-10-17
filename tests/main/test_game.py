@@ -26,36 +26,36 @@ def test_game_controller_init(game_app_fixture: GameApplication) -> None:
     assert isinstance(app.vocabulary, WordVocabulary)
 
 
-def test_game_controller_play_game_player_1_wins(game_app_fixture: GameApplication) -> None:
+def test_game_controller_play_game_lost(game_app_fixture: GameApplication) -> None:
     with mock.patch(
         "builtins.input",
         side_effect=["u", "e", "s", "d", "f", "k", "l", "i"],
     ):
         game_app_fixture.play_game()
-    current_game = game_app_fixture.controller.current_game
-    assert current_game.state() == GameState.PLAYER_1_WINS
-    assert current_game.current_turn.turn_number == 8
-    assert current_game.current_turn.secret_word == "test"
-    assert current_game.current_turn.current_word == "_es_"
-    assert current_game.current_turn.errors == ["u", "d", "f", "k", "l", "i"]
+    current_game = game_app_fixture.controller.game
+    assert current_game.state() == GameState.LOST
+    assert current_game.turn.turn_number == 8
+    assert current_game.turn.secret_word == "test"
+    assert current_game.turn.current_word == "_es_"
+    assert current_game.turn.errors == ["u", "d", "f", "k", "l", "i"]
 
 
-def test_game_controller_play_game_player_2_wins(game_app_fixture: GameApplication) -> None:
+def test_game_controller_play_game_won(game_app_fixture: GameApplication) -> None:
     with mock.patch("builtins.input", side_effect=["t", "e", "s"]):
         game_app_fixture.play_game()
-    current_game = game_app_fixture.controller.current_game
-    assert current_game.state() == GameState.PLAYER_2_WINS
-    assert current_game.current_turn.turn_number == 3
-    assert current_game.current_turn.current_word == "test"
-    assert current_game.current_turn.errors == []
+    current_game = game_app_fixture.controller.game
+    assert current_game.state() == GameState.WON
+    assert current_game.turn.turn_number == 3
+    assert current_game.turn.current_word == "test"
+    assert current_game.turn.errors == []
 
 
 def test_game_controller_play_game_input_tries_exceeded(game_app_fixture: GameApplication) -> None:
     with mock.patch("builtins.input", side_effect=["11", "22", "33", "t", "e", "s"]):
         game_app_fixture.play_game()
-    current_game = game_app_fixture.controller.current_game
-    assert current_game.current_turn.current_word == "test"
-    assert current_game.current_turn.errors == ["*"]
+    current_game = game_app_fixture.controller.game
+    assert current_game.turn.current_word == "test"
+    assert current_game.turn.errors == ["*"]
 
 
 @pytest.mark.parametrize(
