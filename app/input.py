@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import random
+from pathlib import Path
 
 
-def read_words_from_file(path: str) -> list:
+def read_words_from_file(path: str | Path) -> list:
     """
     Read words from a file and return them as a list.
 
@@ -11,7 +12,7 @@ def read_words_from_file(path: str) -> list:
     because the player can input only letters and input is lowercased.
 
     Args:
-        path (str): Path to the file.
+        path (str | Path): Path to the file.
 
     Returns:
         list: List of words.
@@ -24,7 +25,7 @@ def read_words_from_file(path: str) -> list:
 class WordVocabulary:
     """Holds a list of words and provides a random word."""
 
-    def __init__(self, path: str) -> None:
+    def __init__(self, path: str | Path) -> None:
         self.words = read_words_from_file(path) or []
         self.used_words: list[int] = []
 

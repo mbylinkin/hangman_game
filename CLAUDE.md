@@ -6,11 +6,9 @@ Console Hangman game in Python, written as an MVC exercise (architecture + testi
 
 ## Commands
 
-Run everything from the repository root — `run.py` and `tests/main/test_game.py` open `data/words.txt` via a CWD-relative path.
-
 ```shell
 pip install -e ".[dev]"
-python run.py                      # play (README's `python -m run.py` is wrong)
+python run.py                      # play
 
 make test                          # pytest .
 make test-cov                      # HTML coverage -> tests/coverage/, fails under 80% (.coveragerc)
@@ -30,7 +28,7 @@ Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController`
 - Model state is split: `Game` keeps `current_word` / `errors`, and each `GameTurn` gets a deep copy of them, mutates its own copy in `play()`, and `Game.play_turn()` copies the result back. `GameTurn.new_turn()` builds the next turn from the previous one; `Game.state()` is computed from `current_turn`, while `validate_letter()` reads `Game.errors` / `Game.current_word` — keep both in sync when changing the model.
 - `GameState` (`app/const.py`): `LOST` = `MAX_GUESS_ERRORS` reached, `WON` = player guessed the word. Hidden letters are `_` in `current_word`.
 - `ConsoleView` renders Jinja2 string templates from `app/templates.py`; the hangman drawing is looked up by error count in `head_ascii`/`body_ascii`/`legs_ascii` (keys 0..6, tied to `MAX_GUESS_ERRORS`).
-- `WordVocabulary` (`app/input.py`) loads `data/words.txt` (one word per line) and returns random words without repeats, tracking used indices.
+- `WordVocabulary` (`app/input.py`) loads `data/words.txt` (one word per line, path in `app/const.py:WORDS_PATH`, resolved from the package location) and returns random words without repeats, tracking used indices.
 
 ## Tests
 
