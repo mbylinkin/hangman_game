@@ -89,6 +89,18 @@ make all
 
 test-coverage files are saved to tests/coverage directory
 
+## Linting
+
+[pre-commit](https://pre-commit.com/) runs [ruff](https://docs.astral.sh/ruff/) (lint + format, config in [ruff.toml](ruff.toml)) and mypy.
+Install the git hook once after cloning:
+```shell
+pre-commit install
+```
+Run all checks manually:
+```shell
+make lint
+```
+
 ## Further development
 
 Application is written for console mode, but due to MVC pattern game logic, client view is separated from each other.

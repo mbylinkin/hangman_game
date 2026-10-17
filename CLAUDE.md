@@ -16,7 +16,7 @@ make test                          # pytest .
 make test-cov                      # HTML coverage -> tests/coverage/, fails under 80% (.coveragerc)
 pytest tests/model/test_game_play.py::test_game_play_turn_guessed_letter   # single test
 
-pre-commit run --all-files         # flake8, mypy, autopep8 (max line 120), reorder-python-imports, pyupgrade --py38-plus
+make lint                          # pre-commit run --all-files: ruff check --fix, ruff format, mypy (config in ruff.toml)
 ```
 
 ## Architecture

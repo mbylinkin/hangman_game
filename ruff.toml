@@ -1,0 +1,15 @@
+line-length = 120
+target-version = "py38"
+
+[lint]
+# E/W/F - former flake8, I - former reorder-python-imports, UP - former pyupgrade
+select = ["E", "W", "F", "I", "UP"]
+ignore = ["E501"]
+
+[lint.isort]
+force-single-line = true
+order-by-type = false
+required-imports = ["from __future__ import annotations"]
+
+[format]
+quote-style = "preserve"
