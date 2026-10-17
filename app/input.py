@@ -7,6 +7,9 @@ def read_words_from_file(path: str) -> list:
     """
     Read words from a file and return them as a list.
 
+    Words are lowercased; words containing non-letter characters (e.g. hyphens) are skipped,
+    because the player can input only letters and input is lowercased.
+
     Args:
         path (str): Path to the file.
 
@@ -14,7 +17,8 @@ def read_words_from_file(path: str) -> list:
         list: List of words.
     """
     with open(path) as file:
-        return file.read().splitlines()
+        words = (line.strip().lower() for line in file)
+        return [word for word in words if word.isalpha()]
 
 
 class WordVocabulary:
