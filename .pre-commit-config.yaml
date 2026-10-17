@@ -3,8 +3,9 @@ repos:
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^tests/data/  # expected outputs, must stay byte-exact
       - id: end-of-file-fixer
-        exclude: ^AGENTS\.md$  # symlink, checked out as a plain file when core.symlinks=false
+        exclude: ^(AGENTS\.md|tests/data/.*)$  # AGENTS.md: symlink, a plain file when core.symlinks=false; tests/data: byte-exact
       - id: check-yaml
       - id: debug-statements
       - id: name-tests-test

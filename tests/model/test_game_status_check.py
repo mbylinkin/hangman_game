@@ -2,44 +2,24 @@ from __future__ import annotations
 
 from app.model import game_state_check
 from app.model import GameState
-from app.model import GameTurn
 
 
 def test_lost() -> None:
     """
-    Test for the scenario where the player loses. It initializes a GameTurn object with specific attributes
-    and then asserts that the game state check function returns the expected GameState for the given scenario.
+    The player loses when the number of errors reaches MAX_GUESS_ERRORS.
     """
-    game_turn = GameTurn(
-        turn_number=6,
-        secret_word="hello",
-        current_word="_____",
-        errors=["a", "b", "c", "d", "e", "f"],
-    )
-    assert game_state_check(game_turn) == GameState.LOST
+    assert game_state_check("_____", ["a", "b", "c", "d", "e", "f"]) == GameState.LOST
 
 
 def test_won() -> None:
     """
-    Test function to check if the player wins the game.
+    The player wins when no hidden letters are left.
     """
-    game_turn = GameTurn(
-        turn_number=6,
-        secret_word="hello",
-        current_word="hello",
-        errors=["a", "b", "c", "d", "e"],
-    )
-    assert game_state_check(game_turn) == GameState.WON
+    assert game_state_check("hello", ["a", "b", "c", "d", "e"]) == GameState.WON
 
 
 def test_ongoing() -> None:
     """
-    Function to test the ongoing game state by creating a game turn and checking the game state.
+    The game goes on while there are hidden letters and errors are below the limit.
     """
-    game_turn = GameTurn(
-        turn_number=6,
-        secret_word="hello",
-        current_word="hel_o",
-        errors=["a", "b", "c", "d", "e"],
-    )
-    assert game_state_check(game_turn) == GameState.ONGOING
+    assert game_state_check("hel_o", ["a", "b", "c", "d", "e"]) == GameState.ONGOING

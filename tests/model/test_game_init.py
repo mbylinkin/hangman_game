@@ -14,8 +14,10 @@ def test_init_valid_inputs() -> None:
     assert instance.secret_word == secret_word
     assert instance.current_word == "____"
     assert instance.errors == []
-    assert instance.current_turn is None
-    assert instance.turn_history == []
+    assert instance.guessed == set()
+    assert instance.turn_number == 0
+    assert instance.guess_letter == ""
+    assert instance.history == []
 
 
 def test_init_invalid_inputs() -> None:
