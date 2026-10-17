@@ -6,6 +6,7 @@ import string
 import tkinter as tk
 from functools import partial
 from tkinter import messagebox
+from typing import Literal
 
 from app.const import GameState
 from app.controller import BaseGameController
@@ -31,6 +32,12 @@ PART_LINES = {
     'right_leg': (130, 135, 150, 170),
 }
 HEAD_OVAL = (115, 45, 145, 75)
+
+# Backgrounds of used letter buttons; they stay colored after the game is over.
+HIT_COLOR = '#2e7d32'
+MISS_COLOR = '#c62828'
+LETTER_FONT = ('Helvetica', 9)
+USED_LETTER_FONT = ('Helvetica', 9, 'bold')
 
 
 class GameClosed(Exception):
@@ -69,7 +76,8 @@ class TkView(BaseView):
 
         self.closed = False
         self.waiting = False
-        self.used_letters: set[str] = set()
+        self.hit_letters: set[str] = set()
+        self.missed_letters: set[str] = set()
         self._letter = tk.StringVar(self.root)
 
         self.round_label = tk.Label(self.root, font=('Helvetica', 12))
@@ -93,14 +101,18 @@ class TkView(BaseView):
                 letters_frame,
                 text=letter.upper(),
                 width=3,
+                font=LETTER_FONT,
                 state='disabled',
-                command=partial(self.press_key, letter),
+                command=partial(self._on_letter_button, letter),
             )
             button.grid(row=idx // 13, column=idx % 13, padx=1, pady=1)
             self.letter_buttons[letter] = button
+        self._default_button_colors = (button.cget('bg'), button.cget('fg'), button.cget('activebackground'))
 
     def render(self, current_game: Game) -> None:
-        self.used_letters = set(current_game.errors) | current_game.guessed
+        self.hit_letters = set(current_game.guessed)
+        self.missed_letters = set(current_game.errors)
+        self._update_buttons()
         self.round_label.config(text=f'Round {current_game.turn_number}' if current_game.turn_number else '')
         self.word_label.config(text=format_word(current_game.current_word))
         self.errors_label.config(text=f'Errors: {", ".join(current_game.errors)}')
@@ -157,9 +169,42 @@ class TkView(BaseView):
 
     def _set_waiting(self, waiting: bool) -> None:
         self.waiting = waiting
+        self._update_buttons()
+
+    def _on_letter_button(self, letter: str) -> None:
+        if letter not in self.hit_letters | self.missed_letters:
+            self.press_key(letter)
+
+    def _update_buttons(self) -> None:
+        """
+        Used letters: sunken, white bold text on green (hit) or red (miss); clicks on them are ignored.
+        They are not disabled, because disabled buttons draw faded text on Windows.
+        Other letters: enabled only while the game waits for a letter.
+        """
         for letter, button in self.letter_buttons.items():
-            enabled = waiting and letter not in self.used_letters
-            button.config(state='normal' if enabled else 'disabled')
+            if letter in self.hit_letters or letter in self.missed_letters:
+                color = HIT_COLOR if letter in self.hit_letters else MISS_COLOR
+                button.config(
+                    state='normal',
+                    relief='sunken',
+                    bg=color,
+                    activebackground=color,
+                    fg='white',
+                    activeforeground='white',
+                    font=USED_LETTER_FONT,
+                )
+            else:
+                background, text_color, active_background = self._default_button_colors
+                state: Literal['normal', 'disabled'] = 'normal' if self.waiting else 'disabled'
+                button.config(
+                    state=state,
+                    relief='raised',
+                    bg=background,
+                    activebackground=active_background,
+                    fg=text_color,
+                    activeforeground=text_color,
+                    font=LETTER_FONT,
+                )
 
 
 def run_gui(vocabulary: WordVocabulary, view: TkView | None = None) -> None:

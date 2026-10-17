@@ -9,6 +9,8 @@ pytest.importorskip('tkinter')
 from app.const import GameState  # noqa: E402
 from app.controller import BaseGameController  # noqa: E402
 from app.gui import GameClosed  # noqa: E402
+from app.gui import HIT_COLOR  # noqa: E402
+from app.gui import MISS_COLOR  # noqa: E402
 from app.gui import run_gui  # noqa: E402
 from app.gui import TkView  # noqa: E402
 from app.input import WordVocabulary  # noqa: E402
@@ -46,22 +48,32 @@ def test_press_key_ignores_non_letters(tk_view: TkView, char: str) -> None:
     assert tk_view.ask_letter() == 'z'
 
 
-def test_used_letters_disabled_while_waiting(tk_view: TkView) -> None:
+def test_buttons_while_waiting(tk_view: TkView) -> None:
+    """
+    While the game waits, unused letters are enabled and used ones keep their hit/miss colors.
+    """
     game = Game('test')
     game.start_next_turn()
     game.play_turn('t')
     game.start_next_turn()
     game.play_turn('a')
     tk_view.render(game)
-    states: dict[str, str] = {}
+    looks: dict[str, tuple[str, str]] = {}
 
     def check_and_press() -> None:
-        states.update({letter: tk_view.letter_buttons[letter]['state'] for letter in 'tab'})
+        looks.update(
+            {
+                letter: (tk_view.letter_buttons[letter]['state'], tk_view.letter_buttons[letter]['relief'])
+                for letter in 'tab'
+            }
+        )
         tk_view.press_key('b')
 
     tk_view.root.after(5, check_and_press)
     tk_view.ask_letter()
-    assert states == {'t': 'disabled', 'a': 'disabled', 'b': 'normal'}
+    assert looks == {'t': ('normal', 'sunken'), 'a': ('normal', 'sunken'), 'b': ('normal', 'raised')}
+    assert tk_view.letter_buttons['t']['bg'] == HIT_COLOR
+    assert tk_view.letter_buttons['a']['bg'] == MISS_COLOR
 
 
 def test_close_while_waiting_raises_game_closed(tk_view: TkView) -> None:
@@ -144,3 +156,50 @@ def test_run_gui_destroys_window_when_player_quits(tk_view: TkView, mocker: Mock
     mocker.patch('app.gui.messagebox.askyesno', return_value=False)
     run_gui(WordVocabulary('words.txt'), view=tk_view)
     assert not window_exists(tk_view.root)
+
+
+def button_look(view: TkView, letter: str) -> tuple[str, str, str]:
+    button = view.letter_buttons[letter]
+    return button['relief'], button['bg'], button['fg']
+
+
+def test_used_letters_colored_by_hit_and_miss(tk_view: TkView) -> None:
+    default_look = button_look(tk_view, 'z')
+    game = Game('test')
+    game.start_next_turn()
+    game.play_turn('t')
+    game.start_next_turn()
+    game.play_turn('a')
+    tk_view.render(game)
+    assert button_look(tk_view, 't') == ('sunken', HIT_COLOR, 'white')
+    assert button_look(tk_view, 'a') == ('sunken', MISS_COLOR, 'white')
+    assert button_look(tk_view, 'z') == default_look
+    assert tk_view.letter_buttons['z']['state'] == 'disabled'
+
+
+def test_used_letter_colors_kept_after_game_over_and_reset_for_new_game(tk_view: TkView) -> None:
+    default_look = button_look(tk_view, 't')
+    game = Game('t')
+    game.start_next_turn()
+    game.play_turn('t')
+    tk_view.render(game)
+    assert button_look(tk_view, 't') == ('sunken', HIT_COLOR, 'white')
+
+    new_game = Game('test')
+    new_game.start_next_turn()
+    tk_view.render(new_game)
+    assert button_look(tk_view, 't') == default_look
+
+
+def test_click_on_used_letter_is_ignored(tk_view: TkView) -> None:
+    game = Game('test')
+    game.start_next_turn()
+    game.play_turn('t')
+    tk_view.render(game)
+
+    def click_used_then_new() -> None:
+        tk_view.letter_buttons['t'].invoke()
+        tk_view.letter_buttons['e'].invoke()
+
+    tk_view.root.after(5, click_used_then_new)
+    assert tk_view.ask_letter() == 'e'
