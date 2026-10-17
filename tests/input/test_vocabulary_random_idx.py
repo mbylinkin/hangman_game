@@ -45,3 +45,28 @@ def test_random_idx_not_used_before_test2(read_words_mock) -> None:
     idx = instance.random_idx()
     assert idx == expected_idx
     assert expected_used_words == instance.used_words
+
+
+def test_random_idx_all_words_used(read_words_mock) -> None:
+    """
+    When all words are used, the used words list starts over instead of hanging.
+    """
+    instance = WordVocabulary('test_file.txt')
+    instance.used_words = [0, 1, 2]
+    idx = instance.random_idx()
+    assert 0 <= idx < len(instance.words)
+    assert instance.used_words == [idx]
+
+
+def test_random_idx_unique_until_exhausted(read_words_mock) -> None:
+    instance = WordVocabulary('test_file.txt')
+    first_round = [instance.random_idx() for _ in range(3)]
+    assert sorted(first_round) == [0, 1, 2]
+    assert 0 <= instance.random_idx() < 3
+
+
+def test_random_idx_empty_vocabulary(mocker: MockerFixture) -> None:
+    mocker.patch('app.input.read_words_from_file', return_value=[])
+    instance = WordVocabulary('empty_file.txt')
+    with pytest.raises(ValueError, match='Vocabulary is empty'):
+        instance.random_idx()
