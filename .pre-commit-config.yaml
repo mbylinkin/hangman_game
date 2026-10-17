@@ -20,4 +20,4 @@ repos:
     rev: v2.4.0
     hooks:
       - id: mypy
-        additional_dependencies: [jinja2, pytest, pytest-mock]
+        additional_dependencies: [pytest, pytest-mock]
