@@ -5,31 +5,38 @@ import pytest
 from app.controller import ConsoleGameController
 
 
-@pytest.fixture
-def controller_fixture() -> ConsoleGameController:
-    """
-    Fixture for the game controller with a secret word, returning a ConsoleGameController object.
-    """
-    controller = ConsoleGameController()
-    controller.start_game("test")
-    return controller
-
-
-def test_valid_lowercase_letter(controller_fixture: ConsoleGameController) -> None:
-    guess_letter = "a"
-    validate_result, _ = controller_fixture.validate_letter(guess_letter)
+def test_valid_lowercase_letter(started_controller: ConsoleGameController) -> None:
+    validate_result, letter = started_controller.validate_letter("a")
     assert validate_result
+    assert letter == "a"
 
 
-def test_invalid_input_not_single_letter(
-    controller_fixture: ConsoleGameController,
-) -> None:
-    guess_letter = "ab"
-    validate_result, _ = controller_fixture.validate_letter(guess_letter)
+@pytest.mark.parametrize(
+    ("guess_letter", "message"),
+    [
+        ("ab", "not a single letter"),
+        ("", "not a single letter"),
+        ("1", "not a letter"),
+        ("*", "not a letter"),
+    ],
+)
+def test_invalid_input(started_controller: ConsoleGameController, guess_letter: str, message: str) -> None:
+    validate_result, validate_message = started_controller.validate_letter(guess_letter)
     assert not validate_result
+    assert message in validate_message
 
 
-def test_invalid_input_not_a_letter(controller_fixture: ConsoleGameController) -> None:
-    guess_letter = "1"
-    validate_result, _ = controller_fixture.validate_letter(guess_letter)
+def test_letter_already_in_errors(started_controller: ConsoleGameController) -> None:
+    started_controller.start_next_turn()
+    started_controller.play_turn("a")
+    validate_result, validate_message = started_controller.validate_letter("a")
     assert not validate_result
+    assert "already guessed" in validate_message
+
+
+def test_letter_already_guessed(started_controller: ConsoleGameController) -> None:
+    started_controller.start_next_turn()
+    started_controller.play_turn("t")
+    validate_result, validate_message = started_controller.validate_letter("t")
+    assert not validate_result
+    assert "already guessed" in validate_message

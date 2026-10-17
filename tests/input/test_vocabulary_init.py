@@ -1,21 +1,14 @@
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 from pytest_mock.plugin import MockerFixture
 
 from app.input import WordVocabulary
 
 
-@pytest.fixture
-def read_words_mock(mocker: MockerFixture):
-    """
-    Fixture for mocking the read_words_from_file function to return a list of words.
-    """
-    _read_words_mock = mocker.patch('app.input.read_words_from_file', return_value=['word1', 'word2', 'word3'])
-    return _read_words_mock
-
-
-def test_init(read_words_mock) -> None:
+def test_init(read_words_mock: MagicMock) -> None:
     """
     Initialize the WordVocabulary instance with the given path and verify the initial state.
     """
@@ -24,6 +17,7 @@ def test_init(read_words_mock) -> None:
     assert instance.words
     assert not instance.used_words
     assert len(instance.words) == 3
+    read_words_mock.assert_called_once_with(path)
 
 
 def test_init_file_not_found() -> None:
