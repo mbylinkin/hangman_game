@@ -8,7 +8,8 @@ Console Hangman game in Python, written as an MVC exercise (architecture + testi
 
 ```shell
 pip install -e ".[dev]"
-python run.py                      # play
+python run.py                      # play in the console
+python run.py --gui                # play in a tkinter window
 
 make test                          # pytest .
 make test-cov                      # HTML coverage -> tests/coverage/, fails under 80% (.coveragerc)
@@ -24,6 +25,7 @@ CI (`.github/workflows/ci.yml`) runs the same pre-commit hooks and `pytest --cov
 Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController` (`app/controller.py`) → `Game` (`app/model.py`) and `ConsoleView` (`app/view.py`).
 
 - All user input/output goes through the abstract `BaseView` (`render`, `ask_new_game`, `ask_letter`, `show_message` — all `@abstractmethod`, a view missing one cannot be instantiated); `ConsoleView` is the only place with `input()`/`print()`. Keep it that way — controller, model and `main.py` must stay console-free.
+- `TkView` (`app/gui.py`) is the window view. Its `ask_letter()` blocks in `root.wait_variable()` (a nested Tk event loop) until a letter button/key is pressed, so the pull-style controller works unchanged. Closing the window while waiting raises `GameClosed`, caught in `run_gui()`. tkinter is imported only in `app/gui.py` and only for `run.py --gui` — keep the console path tkinter-free.
 - `GameApplication.loop()` repeats `play_game()` while `controller.ask_new_game()`; `play_game()` drives each turn: `start_next_turn()` → `render()` → `input_letter()` → `play_turn()`, until `game_pending()` is false. The controller is injected via `GameApplication(vocabulary, controller=...)`, defaulting to `get_game_controller()`.
 - `BaseGameController(view)` holds the `Game` and the view and works with any `BaseView`. `input_letter()` asks the view up to `MAX_LETTER_INPUT_TRIES` times, shows validation messages via `view.show_message`, then returns the sentinel `"*"` (counted as a wrong guess). `ConsoleGameController` only binds `ConsoleView`.
 - `Game` is the single source of game state: `errors`, `guessed` letters, `turn_number` (0 = no turn started) and `guess_letter` ("" until the current turn is played). `current_word` is derived from `secret_word` + `guessed` — don't store it. `start_next_turn()` → `play_turn(letter)` per turn; `play_turn` before any turn raises `RuntimeError`. `history` is a list of frozen `Move(number, letter, hit)`, not read by the game itself.
@@ -33,4 +35,4 @@ Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController`
 
 ## Tests
 
-`tests/` mirrors the modules (`controller/`, `input/`, `main/`, `model/`, `view/`). `tests/main/test_console_transcript.py` plays two seeded games through `run.main()` and compares the whole console output with `tests/data/console_transcript.txt` byte for byte — update that file only for intended output changes (it is excluded from whitespace hooks). Controller/application tests use `FakeView` from `tests/conftest.py` (`fake_view` fixture: preset `new_game_answers`/`letters`, recorded `messages`/`rendered_states`); only `ConsoleView` tests and the console end-to-end tests in `tests/main` patch `builtins.input`. File reading is mocked via `mocker.patch('app.input.read_words_from_file', ...)` (pytest-mock). The `name-tests-test` pre-commit hook requires every file in `tests/` except `conftest.py`/`__init__.py` to be named `test_*.py` — shared test helpers go into `conftest.py`.
+`tests/` mirrors the modules (`controller/`, `gui/`, `input/`, `main/`, `model/`, `run/`, `view/`). GUI tests share one hidden session `Tk` root and get a `Toplevel` per test (`tk_view` fixture; a `Tk()` per test intermittently fails on Windows); `autoplay()` in `tests/gui/conftest.py` presses letters on Tk timers while `ask_letter()` waits. Without a display they are skipped; CI runs them under `xvfb-run` with `HANGMAN_REQUIRE_GUI=1`, which turns that skip into a failure. `tests/main/test_console_transcript.py` plays two seeded games through `run.main()` and compares the whole console output with `tests/data/console_transcript.txt` byte for byte — update that file only for intended output changes (it is excluded from whitespace hooks). Controller/application tests use `FakeView` from `tests/conftest.py` (`fake_view` fixture: preset `new_game_answers`/`letters`, recorded `messages`/`rendered_states`); only `ConsoleView` tests and the console end-to-end tests in `tests/main` patch `builtins.input`. File reading is mocked via `mocker.patch('app.input.read_words_from_file', ...)` (pytest-mock). The `name-tests-test` pre-commit hook requires every file in `tests/` except `conftest.py`/`__init__.py` to be named `test_*.py` — shared test helpers go into `conftest.py`.
