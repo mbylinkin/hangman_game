@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from abc import ABC
+from abc import abstractmethod
+
 from jinja2 import Template
 
 from app import templates
@@ -7,22 +10,27 @@ from app.const import GameState
 from app.model import Game
 
 
-class BaseView:
-    """Base view: all user input and output of the game goes through it."""
+class BaseView(ABC):
+    """
+    Base view: all user input and output of the game goes through it.
+    A subclass must implement every method, otherwise it cannot be instantiated.
+    """
 
+    @abstractmethod
     def render(self, current_game: Game) -> None:
-        raise NotImplementedError
+        """Show the current turn and, when the game is over, its result."""
 
+    @abstractmethod
     def ask_new_game(self) -> bool:
         """Ask the player whether to start a new game."""
-        raise NotImplementedError
 
+    @abstractmethod
     def ask_letter(self) -> str:
         """Ask the player for a letter; the input is returned as is, without validation."""
-        raise NotImplementedError
 
+    @abstractmethod
     def show_message(self, message: str) -> None:
-        raise NotImplementedError
+        """Show a message to the player, e.g. why the input is not accepted."""
 
 
 class ConsoleView(BaseView):
