@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Console Hangman game in Python, written as an MVC exercise (architecture + testing practice). Dependencies are declared in `pyproject.toml`: Jinja2 is the only runtime dependency, dev tooling is in the `dev` extra.
+Console Hangman game in Python, written as an MVC exercise (architecture + testing practice). Dependencies are declared in `pyproject.toml`: there are no runtime dependencies (standard library only, tkinter for the GUI), dev tooling is in the `dev` extra.
 
 ## Commands
 
@@ -30,7 +30,7 @@ Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController`
 - `BaseGameController(view)` holds the `Game` and the view and works with any `BaseView`. `input_letter()` asks the view up to `MAX_LETTER_INPUT_TRIES` times, shows validation messages via `view.show_message`, then returns the sentinel `"*"` (counted as a wrong guess). `ConsoleGameController` only binds `ConsoleView`.
 - `Game` is the single source of game state: `errors`, `guessed` letters, `turn_number` (0 = no turn started) and `guess_letter` ("" until the current turn is played). `current_word` is derived from `secret_word` + `guessed` — don't store it. `start_next_turn()` → `play_turn(letter)` per turn; `play_turn` before any turn raises `RuntimeError`. `history` is a list of frozen `Move(number, letter, hit)`, not read by the game itself.
 - `GameState` (`app/const.py`): `LOST` = `MAX_GUESS_ERRORS` reached, `WON` = player guessed the word. Hidden letters are `_` in `current_word`.
-- `ConsoleView` renders Jinja2 string templates from `app/templates.py`; the hangman drawing is looked up by error count in `head_ascii`/`body_ascii`/`legs_ascii` (keys 0..6, tied to `MAX_GUESS_ERRORS`).
+- `ConsoleView` renders the string templates from `app/templates.py` with `str.format` (`{name}` placeholders, literal braces must be doubled; a misspelled placeholder raises `KeyError`); the hangman drawing is looked up by error count in `head_ascii`/`body_ascii`/`legs_ascii` (keys 0..6, tied to `MAX_GUESS_ERRORS`).
 - `WordVocabulary` (`app/input.py`) loads `data/words.txt` (one word per line, path in `app/const.py:WORDS_PATH`, resolved from the package location) and returns random words without repeats, tracking used indices.
 
 ## Tests

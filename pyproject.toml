@@ -5,9 +5,7 @@ description = "Console Hangman game"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
-dependencies = [
-    "jinja2>=3.1.6",
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [

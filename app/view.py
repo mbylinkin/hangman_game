@@ -3,8 +3,6 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
-from jinja2 import Template
-
 from app import templates
 from app.const import GameState
 from app.model import Game
@@ -52,10 +50,8 @@ class ConsoleView(BaseView):
             self.render_game_over(current_game)
 
     def render_turn(self, current_game: Game) -> None:
-        template_text = templates.template_round
-        template = Template(template_text)
         errors_count = len(current_game.errors)
-        rendered_template = template.render(
+        rendered_template = templates.template_round.format(
             round=current_game.turn_number,
             secret_word=current_game.secret_word,
             current_word=current_game.current_word,
@@ -69,9 +65,7 @@ class ConsoleView(BaseView):
 
     def render_game_over(self, current_game: Game) -> None:
         result = 'YOU LOSE :(' if current_game.state() == GameState.LOST else 'YOU WIN :)'
-        template_text = templates.template_game_over
-        template = Template(template_text)
-        rendered_template = template.render(
+        rendered_template = templates.template_game_over.format(
             message=result,
             round=current_game.turn_number,
             secret_word=current_game.secret_word.upper(),

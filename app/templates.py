@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+# Templates are rendered with str.format: {name} is a placeholder, a literal brace must be doubled ({{ or }}).
+
 template_round = """
-    Round:{{round}}
+    Round:{round}
     +---+
-    |   |      Word: {{current_word}}
-  {{head}} |    Errors: {{errors}}
-  {{body}} |    Letter: {{letter}}
-  {{legs}} |
+    |   |      Word: {current_word}
+  {head} |    Errors: {errors}
+  {body} |    Letter: {letter}
+  {legs} |
         |
     =======
     -------------------------------------------------------------------------------------
@@ -44,10 +46,9 @@ legs_ascii = {
 template_game_over = """
 =====================================================================================
                                    GAME OVER!
-                                   {{message}}
+                                   {message}
 
-   Secret word:  {{secret_word}}
-   Current word: {{current_word}}
-   Round:        {{round}}
-=====================================================================================
-"""
+   Secret word:  {secret_word}
+   Current word: {current_word}
+   Round:        {round}
+====================================================================================="""
