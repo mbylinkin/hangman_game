@@ -14,7 +14,7 @@ To only play the game, `pip install -e .` is enough.
 
 ## Running game
 
-To run game, execute run.py from the repository root (the vocabulary path `data/words.txt` is relative):
+To run game, execute run.py:
 
 ```shell
 python run.py
