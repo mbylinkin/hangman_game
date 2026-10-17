@@ -1,79 +1,56 @@
 from __future__ import annotations
 
-import pytest
-
 from app.const import GameState
+from app.const import MAX_GUESS_ERRORS
 from app.controller import ConsoleGameController
 from app.model import Game
 from app.view import ConsoleView
 
 
-@pytest.fixture
-def controller_fixture() -> ConsoleGameController:
-    controller = ConsoleGameController()
-    return controller
-
-
-def test_game_controller_init(controller_fixture: ConsoleGameController) -> None:
-    controller = controller_fixture
+def test_game_controller_init(controller: ConsoleGameController) -> None:
     assert controller.current_game is None
-    assert controller.view is not None
     assert isinstance(controller.view, ConsoleView)
 
 
-def test_game_controller_start_game(controller_fixture: ConsoleGameController) -> None:
-    controller = controller_fixture
+def test_game_controller_start_game(controller: ConsoleGameController) -> None:
     controller.start_game("test")
-    assert controller.view is not None
-    assert controller.current_game is not None
     assert isinstance(controller.current_game, Game)
+    assert controller.current_game.secret_word == "test"
 
 
-def test_game_controller_play_turn(controller_fixture: ConsoleGameController) -> None:
-    controller = controller_fixture
-    controller.start_game("test")
-    controller.start_next_turn()
-    game_state = controller.play_turn("t")
-    current_turn = controller.current_game.get_current_turn()
+def test_game_controller_play_turn(started_controller: ConsoleGameController) -> None:
+    started_controller.start_next_turn()
+    game_state = started_controller.play_turn("t")
+    current_turn = started_controller.current_game.get_current_turn()
     assert game_state == GameState.ONGOING
     assert current_turn.secret_word == "test"
     assert current_turn.current_word == "t__t"
     assert current_turn.errors == []
 
 
-def test_game_controller_game_state_at_start(
-    controller_fixture: ConsoleGameController,
-) -> None:
-    controller = controller_fixture
-    controller.start_game("test")
-    assert controller.game_pending()
+def test_game_controller_game_state_at_start(started_controller: ConsoleGameController) -> None:
+    assert started_controller.game_pending()
 
 
-def test_game_controller_game_state_after_turn(
-    controller_fixture: ConsoleGameController,
-) -> None:
-    controller = controller_fixture
-    controller.start_game("test")
-    controller.start_next_turn()
-    _ = controller.play_turn("t")
-    assert controller.game_pending()
+def test_game_controller_game_state_after_turn(started_controller: ConsoleGameController) -> None:
+    started_controller.start_next_turn()
+    started_controller.play_turn("t")
+    assert started_controller.game_pending()
 
 
-def test_game_controller_game_state_after_end_player_1_wins(
-    controller_fixture: ConsoleGameController,
-) -> None:
-    controller = controller_fixture
+def test_game_controller_game_state_after_end_player_1_wins(controller: ConsoleGameController) -> None:
     controller.start_game("o")
-    controller.start_next_turn()
-    _ = controller.play_turn("t")
-    assert controller.game_pending()
+    for letter in "abcdefghijklmn"[:MAX_GUESS_ERRORS]:
+        assert controller.game_pending()
+        controller.start_next_turn()
+        controller.play_turn(letter)
+    assert not controller.game_pending()
+    assert controller.game_state() == GameState.PLAYER_1_WINS
 
 
-def test_game_controller_game_state_after_end_player_2_wins(
-    controller_fixture: ConsoleGameController,
-) -> None:
-    controller = controller_fixture
+def test_game_controller_game_state_after_end_player_2_wins(controller: ConsoleGameController) -> None:
     controller.start_game("t")
     controller.start_next_turn()
-    _ = controller.play_turn("t")
+    controller.play_turn("t")
     assert not controller.game_pending()
+    assert controller.game_state() == GameState.PLAYER_2_WINS
