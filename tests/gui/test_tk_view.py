@@ -6,16 +6,16 @@ from pytest_mock.plugin import MockerFixture
 pytest.importorskip('tkinter')
 
 
-from app.const import GameState  # noqa: E402
-from app.controller import BaseGameController  # noqa: E402
-from app.gui import GameClosed  # noqa: E402
-from app.gui import HIT_COLOR  # noqa: E402
-from app.gui import MISS_COLOR  # noqa: E402
-from app.gui import run_gui  # noqa: E402
-from app.gui import TkView  # noqa: E402
-from app.input import WordVocabulary  # noqa: E402
-from app.main import GameApplication  # noqa: E402
-from app.model import Game  # noqa: E402
+from hangman.const import GameState  # noqa: E402
+from hangman.controller import BaseGameController  # noqa: E402
+from hangman.gui import GameClosed  # noqa: E402
+from hangman.gui import HIT_COLOR  # noqa: E402
+from hangman.gui import MISS_COLOR  # noqa: E402
+from hangman.gui import run_gui  # noqa: E402
+from hangman.gui import TkView  # noqa: E402
+from hangman.input import WordVocabulary  # noqa: E402
+from hangman.main import GameApplication  # noqa: E402
+from hangman.model import Game  # noqa: E402
 from tests.gui.conftest import autoplay  # noqa: E402
 from tests.gui.conftest import window_exists  # noqa: E402
 
@@ -93,7 +93,7 @@ def test_close_when_not_waiting_destroys_window(tk_view: TkView) -> None:
 
 @pytest.mark.parametrize('answer', [True, False])
 def test_ask_new_game(tk_view: TkView, mocker: MockerFixture, answer: bool) -> None:
-    askyesno = mocker.patch('app.gui.messagebox.askyesno', return_value=answer)
+    askyesno = mocker.patch('hangman.gui.messagebox.askyesno', return_value=answer)
     assert tk_view.ask_new_game() is answer
     askyesno.assert_called_once()
 
@@ -132,8 +132,8 @@ def test_full_game_in_window(tk_view: TkView, mocker: MockerFixture) -> None:
     """
     The whole application runs with the window view: one won game, then the player declines a new one.
     """
-    mocker.patch('app.input.read_words_from_file', return_value=['test'])
-    mocker.patch('app.gui.messagebox.askyesno', side_effect=[True, False])
+    mocker.patch('hangman.input.read_words_from_file', return_value=['test'])
+    mocker.patch('hangman.gui.messagebox.askyesno', side_effect=[True, False])
     controller = BaseGameController(tk_view)
     application = GameApplication(WordVocabulary('words.txt'), controller=controller)
     autoplay(tk_view, ['x', 'X', 't', 'e', 's'])
@@ -144,16 +144,16 @@ def test_full_game_in_window(tk_view: TkView, mocker: MockerFixture) -> None:
 
 
 def test_run_gui_returns_when_window_closed(tk_view: TkView, mocker: MockerFixture) -> None:
-    mocker.patch('app.input.read_words_from_file', return_value=['test'])
-    mocker.patch('app.gui.messagebox.askyesno', return_value=True)
+    mocker.patch('hangman.input.read_words_from_file', return_value=['test'])
+    mocker.patch('hangman.gui.messagebox.askyesno', return_value=True)
     tk_view.root.after(20, tk_view.close)
     run_gui(WordVocabulary('words.txt'), view=tk_view)
     assert tk_view.closed
 
 
 def test_run_gui_destroys_window_when_player_quits(tk_view: TkView, mocker: MockerFixture) -> None:
-    mocker.patch('app.input.read_words_from_file', return_value=['test'])
-    mocker.patch('app.gui.messagebox.askyesno', return_value=False)
+    mocker.patch('hangman.input.read_words_from_file', return_value=['test'])
+    mocker.patch('hangman.gui.messagebox.askyesno', return_value=False)
     run_gui(WordVocabulary('words.txt'), view=tk_view)
     assert not window_exists(tk_view.root)
 

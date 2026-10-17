@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from app.const import GameState
-from app.const import MAX_GUESS_ERRORS
-from app.controller import ConsoleGameController
-from app.model import Game
-from app.view import ConsoleView
+from hangman.const import GameState
+from hangman.const import MAX_GUESS_ERRORS
+from hangman.controller import ConsoleGameController
+from hangman.model import Game
+from hangman.view import ConsoleView
 
 
 def test_game_controller_init(controller: ConsoleGameController) -> None:

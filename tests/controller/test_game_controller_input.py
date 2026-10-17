@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.controller import BaseGameController
+from hangman.controller import BaseGameController
 from tests.conftest import FakeView
 
 

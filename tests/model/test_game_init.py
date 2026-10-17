@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.model import Game
+from hangman.model import Game
 
 
 def test_init_valid_inputs() -> None:

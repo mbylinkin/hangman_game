@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from app.const import WORDS_PATH
-from app.input import read_words_from_file
+from hangman.const import WORDS_PATH
+from hangman.input import read_words_from_file
 
 
 def test_read_words_lowercased(tmp_path: Path) -> None:

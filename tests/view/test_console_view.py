@@ -4,8 +4,8 @@ from unittest import mock
 
 import pytest
 
-from app.model import Game
-from app.view import ConsoleView
+from hangman.model import Game
+from hangman.view import ConsoleView
 
 
 @pytest.mark.parametrize(

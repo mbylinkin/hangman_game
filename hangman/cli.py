@@ -1,13 +1,13 @@
-"""Command line entry point: `hangman` (installed script), `python -m app` or `python run.py`."""
+"""Command line entry point: `hangman` (installed script), `python -m hangman` or `python run.py`."""
 
 from __future__ import annotations
 
 import argparse
 from collections.abc import Sequence
 
-from app.const import WORDS_PATH
-from app.input import WordVocabulary
-from app.main import GameApplication
+from hangman.const import WORDS_PATH
+from hangman.input import WordVocabulary
+from hangman.main import GameApplication
 
 
 def main(argv: Sequence[str] | None = None) -> None:
@@ -17,7 +17,7 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     vocabulary = WordVocabulary(WORDS_PATH)
     if args.gui:
-        from app.gui import run_gui  # tkinter is imported only for the GUI
+        from hangman.gui import run_gui  # tkinter is imported only for the GUI
 
         run_gui(vocabulary)
     else:

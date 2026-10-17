@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from app.const import GameState
-from app.model import Game
-from app.model import Move
+from hangman.const import GameState
+from hangman.model import Game
+from hangman.model import Move
 
 
 @pytest.fixture

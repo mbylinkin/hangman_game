@@ -9,7 +9,7 @@ pytest.importorskip('tkinter')
 
 import tkinter as tk  # noqa: E402
 
-from app.gui import TkView  # noqa: E402
+from hangman.gui import TkView  # noqa: E402
 
 
 @pytest.fixture(scope='session')

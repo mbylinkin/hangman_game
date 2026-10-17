@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from app.model import game_state_check
-from app.model import GameState
+from hangman.model import game_state_check
+from hangman.model import GameState
 
 
 def test_lost() -> None:

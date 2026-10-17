@@ -5,11 +5,11 @@ from unittest import mock
 import pytest
 from pytest_mock.plugin import MockerFixture
 
-from app import controller
-from app.const import GameState
-from app.controller import BaseGameController
-from app.input import WordVocabulary
-from app.main import GameApplication
+from hangman import controller
+from hangman.const import GameState
+from hangman.controller import BaseGameController
+from hangman.input import WordVocabulary
+from hangman.main import GameApplication
 from tests.conftest import FakeView
 
 
@@ -18,7 +18,7 @@ def game_app_fixture(mocker: MockerFixture) -> GameApplication:
     """
     Game application with a vocabulary of a single word "test".
     """
-    mocker.patch('app.input.read_words_from_file', return_value=['test'])
+    mocker.patch('hangman.input.read_words_from_file', return_value=['test'])
     return GameApplication(WordVocabulary('words.txt'))
 
 
@@ -85,7 +85,7 @@ def test_game_application_with_injected_controller(mocker: MockerFixture, fake_v
     """
     The whole game runs through the view interface, without console input/output.
     """
-    mocker.patch('app.input.read_words_from_file', return_value=['test'])
+    mocker.patch('hangman.input.read_words_from_file', return_value=['test'])
     app = GameApplication(WordVocabulary('words.txt'), controller=BaseGameController(fake_view))
     fake_view.new_game_answers = [True, False]
     fake_view.letters = ["t", "x", "e", "s"]

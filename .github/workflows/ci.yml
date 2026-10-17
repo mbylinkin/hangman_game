@@ -32,6 +32,6 @@ jobs:
       - run: pip install -e ".[dev]"
       # coverage threshold (fail_under) is set in .coveragerc;
       # xvfb gives tkinter a virtual display, HANGMAN_REQUIRE_GUI fails GUI tests instead of skipping them
-      - run: xvfb-run -a pytest -rs --cov=app --cov-report=term-missing
+      - run: xvfb-run -a pytest -rs --cov=hangman --cov-report=term-missing
         env:
           HANGMAN_REQUIRE_GUI: "1"

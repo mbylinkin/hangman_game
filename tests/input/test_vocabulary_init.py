@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_mock.plugin import MockerFixture
 
-from app.input import WordVocabulary
+from hangman.input import WordVocabulary
 
 
 def test_init(read_words_mock: MagicMock) -> None:
@@ -32,6 +32,6 @@ def test_init_empty_file(mocker: MockerFixture) -> None:
     """
     Test function for initializing an empty file.
     """
-    mocker.patch('app.input.read_words_from_file', return_value=[])
+    mocker.patch('hangman.input.read_words_from_file', return_value=[])
     instance = WordVocabulary('empty_file.txt')
     assert len(instance.used_words) == 0

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from app.controller import BaseGameController
-from app.controller import ConsoleGameController
-from app.input import WordVocabulary
+from hangman.controller import BaseGameController
+from hangman.controller import ConsoleGameController
+from hangman.input import WordVocabulary
 
 
 def get_game_controller() -> BaseGameController:

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from app.const import GameState
-from app.const import MAX_GUESS_ERRORS
+from hangman.const import GameState
+from hangman.const import MAX_GUESS_ERRORS
 
 
 def game_state_check(current_word: str, errors: list[str]) -> GameState:
