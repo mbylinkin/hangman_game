@@ -6,10 +6,11 @@
 
 ## Installation
 
-To install the application, clone the repository and install the requirements.
+Python 3.10+ is required. Clone the repository and install the application with development dependencies:
 ```shell
-pip install -r requirements.txt
+pip install -e ".[dev]"
 ```
+To only play the game, `pip install -e .` is enough.
 
 ## Running game
 
@@ -52,7 +53,7 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 ├── LICENSE
 ├── Makefile
 ├── README.md
-├── requirements.txt
+├── pyproject.toml
 ├── ruff.toml
 └── run.py
 ```
