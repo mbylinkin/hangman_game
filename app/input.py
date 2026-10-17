@@ -27,10 +27,15 @@ class WordVocabulary:
     def random_idx(self) -> int:
         """
         Get a random index of a word from the vocabulary.
+        When all words are used, starts over with the whole vocabulary.
 
         Returns:
             int: Random index of a word.
         """
+        if not self.words:
+            raise ValueError('Vocabulary is empty.')
+        if len(self.used_words) >= len(self.words):
+            self.used_words.clear()
         random_idx = random.randint(0, len(self.words) - 1)
         while random_idx in self.used_words:
             random_idx = random.randint(0, len(self.words) - 1)
