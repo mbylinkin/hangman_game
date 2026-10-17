@@ -3,4 +3,7 @@ test:
 test-cov:
 	pytest -v --cov=. --cov-report=html
 
-all: test test-cov
+lint:
+	pre-commit run --all-files
+
+all: lint test-cov

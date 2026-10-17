@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from unittest.mock import MagicMock
+
 import pytest
 from pytest_mock.plugin import MockerFixture
 
@@ -7,7 +9,7 @@ from app.input import WordVocabulary
 
 
 @pytest.fixture
-def read_words_mock(mocker: MockerFixture) -> None:
+def read_words_mock(mocker: MockerFixture) -> MagicMock:
     _read_words_mock = mocker.patch('app.input.read_words_from_file', return_value=['word1', 'word2', 'word3'])
     return _read_words_mock
 

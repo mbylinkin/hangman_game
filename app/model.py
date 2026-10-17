@@ -49,9 +49,7 @@ class GameTurn:
             self.errors.append(guess_letter)
 
         for occurence in occurencies:
-            self.current_word = (
-                self.current_word[:occurence] + guess_letter + self.current_word[occurence + 1:]
-            )  # noqa: E203
+            self.current_word = self.current_word[:occurence] + guess_letter + self.current_word[occurence + 1 :]
 
         return self.current_word, self.errors
 
