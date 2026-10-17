@@ -58,3 +58,10 @@ def test_game_controller_play_game_player_2_wins(monkeypatch, game_app_fixture) 
         assert game_app_fixture.controller.current_game.current_turn.secret_word == "test"
         assert game_app_fixture.controller.current_game.current_turn.current_word == "test"
         assert game_app_fixture.controller.current_game.current_turn.errors == []
+
+
+def test_game_controller_play_game_input_tries_exceeded(monkeypatch, game_app_fixture) -> None:
+    with mock.patch("builtins.input", side_effect=["11", "22", "33", "t", "e", "s"]):
+        game_app_fixture.play_game()
+        assert game_app_fixture.controller.current_game.current_turn.current_word == "test"
+        assert game_app_fixture.controller.current_game.current_turn.errors == ["*"]

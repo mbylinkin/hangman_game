@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import re
 
 from app.const import GameState
 from app.const import MAX_GUESS_ERRORS
@@ -45,7 +44,7 @@ class GameTurn:
 
     def play(self, guess_letter: str) -> tuple[str, list[str]]:
         self.guess_letter = guess_letter
-        occurencies = [m.start() for m in re.finditer(guess_letter, self.secret_word)]
+        occurencies = [idx for idx, letter in enumerate(self.secret_word) if letter == guess_letter]
         if len(occurencies) == 0:
             self.errors.append(guess_letter)
 

@@ -106,3 +106,12 @@ def test_game_turn_play_failure(game_turn_fixture: GameTurn) -> None:
     assert game_turn_fixture.current_word == "____"
     assert game_turn_fixture.errors == ["a"]
     assert game_turn_fixture.guess_letter == "a"
+
+
+def test_game_turn_play_regex_special_char(game_turn_fixture: GameTurn) -> None:
+    """
+    "*" is returned by the controller when input tries are exceeded; it must count as an error, not crash.
+    """
+    game_turn_fixture.play("*")
+    assert game_turn_fixture.current_word == "____"
+    assert game_turn_fixture.errors == ["*"]
