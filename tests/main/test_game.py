@@ -36,10 +36,10 @@ def test_game_controller_play_game_lost(game_app_fixture: GameApplication) -> No
         game_app_fixture.play_game()
     current_game = game_app_fixture.controller.game
     assert current_game.state() == GameState.LOST
-    assert current_game.turn.turn_number == 8
-    assert current_game.turn.secret_word == "test"
-    assert current_game.turn.current_word == "_es_"
-    assert current_game.turn.errors == ["u", "d", "f", "k", "l", "i"]
+    assert current_game.turn_number == 8
+    assert current_game.secret_word == "test"
+    assert current_game.current_word == "_es_"
+    assert current_game.errors == ["u", "d", "f", "k", "l", "i"]
 
 
 def test_game_controller_play_game_won(game_app_fixture: GameApplication) -> None:
@@ -47,17 +47,17 @@ def test_game_controller_play_game_won(game_app_fixture: GameApplication) -> Non
         game_app_fixture.play_game()
     current_game = game_app_fixture.controller.game
     assert current_game.state() == GameState.WON
-    assert current_game.turn.turn_number == 3
-    assert current_game.turn.current_word == "test"
-    assert current_game.turn.errors == []
+    assert current_game.turn_number == 3
+    assert current_game.current_word == "test"
+    assert current_game.errors == []
 
 
 def test_game_controller_play_game_input_tries_exceeded(game_app_fixture: GameApplication) -> None:
     with mock.patch("builtins.input", side_effect=["11", "22", "33", "t", "e", "s"]):
         game_app_fixture.play_game()
     current_game = game_app_fixture.controller.game
-    assert current_game.turn.current_word == "test"
-    assert current_game.turn.errors == ["*"]
+    assert current_game.current_word == "test"
+    assert current_game.errors == ["*"]
 
 
 @pytest.mark.parametrize(

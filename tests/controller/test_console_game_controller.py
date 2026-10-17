@@ -23,11 +23,11 @@ def test_game_controller_start_game(controller: ConsoleGameController) -> None:
 def test_game_controller_play_turn(started_controller: ConsoleGameController) -> None:
     started_controller.start_next_turn()
     game_state = started_controller.play_turn("t")
-    current_turn = started_controller.game.turn
+    game = started_controller.game
     assert game_state == GameState.ONGOING
-    assert current_turn.secret_word == "test"
-    assert current_turn.current_word == "t__t"
-    assert current_turn.errors == []
+    assert game.secret_word == "test"
+    assert game.current_word == "t__t"
+    assert game.errors == []
 
 
 def test_game_controller_game_state_at_start(started_controller: ConsoleGameController) -> None:

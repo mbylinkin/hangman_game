@@ -1,97 +1,63 @@
 from __future__ import annotations
 
-import copy
+from dataclasses import dataclass
 
 from app.const import GameState
 from app.const import MAX_GUESS_ERRORS
 
 
-def game_state_check(game_turn: GameTurn | None) -> GameState:
+def game_state_check(current_word: str, errors: list[str]) -> GameState:
     """Check game state and return corresponding constant."""
-    if game_turn is None:
-        return GameState.ONGOING
-    if len(game_turn.errors) >= MAX_GUESS_ERRORS:
+    if len(errors) >= MAX_GUESS_ERRORS:
         return GameState.LOST
-    if game_turn.current_word.find("_") == -1:
+    if "_" not in current_word:
         return GameState.WON
     return GameState.ONGOING
 
 
-class GameTurn:
-    """Holds data about current game tour."""
+@dataclass(frozen=True)
+class Move:
+    """A played turn: its number, the guessed letter and whether it is in the secret word."""
 
-    @classmethod
-    def new_turn(cls, game_turn: GameTurn) -> GameTurn:
-        return cls(
-            turn_number=game_turn.turn_number + 1,
-            secret_word=game_turn.secret_word,
-            current_word=game_turn.current_word,
-            errors=game_turn.errors,
-        )
-
-    def __init__(
-        self,
-        turn_number: int,
-        secret_word: str,
-        current_word: str,
-        errors: list[str],
-    ) -> None:
-        self.turn_number = turn_number
-        self.secret_word = secret_word
-        self.current_word = current_word
-        self.errors = copy.deepcopy(errors)
-        self.guess_letter = ""
-
-    def play(self, guess_letter: str) -> tuple[str, list[str]]:
-        self.guess_letter = guess_letter
-        occurencies = [idx for idx, letter in enumerate(self.secret_word) if letter == guess_letter]
-        if len(occurencies) == 0:
-            self.errors.append(guess_letter)
-
-        for occurence in occurencies:
-            self.current_word = self.current_word[:occurence] + guess_letter + self.current_word[occurence + 1 :]
-
-        return self.current_word, self.errors
+    number: int
+    letter: str
+    hit: bool
 
 
 class Game:
-    """Holds data about current game."""
+    """Holds the whole state of the current game."""
 
     def __init__(self, secret_word: str) -> None:
-        self.turn_history: list[GameTurn] = []
+        if not isinstance(secret_word, str):
+            raise TypeError(f'secret_word must be str, not {type(secret_word).__name__}')
         self.secret_word = secret_word
-        self.current_word = "_" * len(secret_word)
+        self.guessed: set[str] = set()
         self.errors: list[str] = []
-        self.current_turn: GameTurn | None = None
+        self.turn_number = 0
+        self.guess_letter = ""
+        self.history: list[Move] = []
 
     @property
-    def turn(self) -> GameTurn:
-        """Current turn; raises if no turn is started."""
-        if self.current_turn is None:
-            raise RuntimeError('Turn is not started, call start_next_turn() first.')
-        return self.current_turn
+    def current_word(self) -> str:
+        """Secret word with not yet guessed letters replaced by "_"."""
+        return "".join(letter if letter in self.guessed else "_" for letter in self.secret_word)
 
     def start_next_turn(self) -> None:
-        if self.current_turn is not None:
-            self.current_turn = GameTurn.new_turn(self.current_turn)
-        else:
-            self.current_turn = GameTurn(
-                1,
-                self.secret_word,
-                self.current_word,
-                self.errors,
-            )
+        self.turn_number += 1
+        self.guess_letter = ""
 
     def play_turn(self, guess_letter: str) -> GameState:
-        self.current_word, self.errors = self.turn.play(guess_letter)
-        self.turn_history.append(self.turn)
+        if self.turn_number == 0:
+            raise RuntimeError('Turn is not started, call start_next_turn() first.')
+        self.guess_letter = guess_letter
+        hit = guess_letter in self.secret_word
+        if hit:
+            self.guessed.add(guess_letter)
+        else:
+            self.errors.append(guess_letter)
+        self.history.append(Move(self.turn_number, guess_letter, hit))
         return self.state()
 
     def state(self) -> GameState:
-        """
-        Return the current game state.n
-        """
-        return game_state_check(self.current_turn)
-
-    def get_current_turn(self) -> GameTurn | None:
-        return self.current_turn
+        """Return the current game state."""
+        return game_state_check(self.current_word, self.errors)
