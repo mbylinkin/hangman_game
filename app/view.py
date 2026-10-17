@@ -18,14 +18,34 @@ class GameTurnProtocol(Protocol):
 
 
 class BaseView:
-    """Base view."""
+    """Base view: all user input and output of the game goes through it."""
 
     def render(self, current_game: Game) -> None:
+        raise NotImplementedError
+
+    def ask_new_game(self) -> bool:
+        """Ask the player whether to start a new game."""
+        raise NotImplementedError
+
+    def ask_letter(self) -> str:
+        """Ask the player for a letter; the input is returned as is, without validation."""
+        raise NotImplementedError
+
+    def show_message(self, message: str) -> None:
         raise NotImplementedError
 
 
 class ConsoleView(BaseView):
     """Console renderer."""
+
+    def ask_new_game(self) -> bool:
+        return input('Start new game? (y/n):').lower() == 'y'
+
+    def ask_letter(self) -> str:
+        return input("Input letter:")
+
+    def show_message(self, message: str) -> None:
+        print(message)
 
     def render(self, current_game: Game) -> None:
         if game_turn := current_game.get_current_turn():
