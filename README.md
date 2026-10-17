@@ -13,23 +13,23 @@ pip install -r requirements.txt
 
 ## Running game
 
-To run game, execute run.py:
+To run game, execute run.py from the repository root (the vocabulary path `data/words.txt` is relative):
 
 ```shell
-python -m run.py
+python run.py
 ```
 
 ## Gameplay
 
 1. After starting game answer "y" on question "Start new game? (y/n)"
 2. Input letters to guess the word
-3. After game end see the result (win/loose)
-4. If you want to play another game, "y" on question "Start new game? (y/n)", "n" - if not
+3. After game end see the result (win/lose)
+4. If you want to play another game, answer "y" on question "Start new game? (y/n)", "n" - if not
 
 ## Application design
 
 Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller), the purpose was to get some practice in
-* architectute design of application
+* architecture design of application
 * writing tests
 
 
@@ -64,7 +64,7 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 * [app/controller.py](app/controller.py) Holds controller class, which holds Model (Game) class, View class and is responsible for communication with model and rendering game
 * [app/model.py](app/model.py) Holds Logic of the Game
 * [app/view.py](app/view.py) A view for rendering game
-* [app/template.py](app/template.py) A templates file for rendering
+* [app/templates.py](app/templates.py) A templates file for rendering
 * [app/input.py](app/input.py) Vocabulary class for generating random word
 * [data/words.txt](data/words.txt) Vocabulary for generating random words. Used in WordVocabulary class
 * [tests](tests) a folder, containing tests
@@ -95,7 +95,7 @@ Application is written for console mode, but due to MVC pattern game logic, clie
 
 So, It is possible to write classes:
 * GUIGameController
-* GUIViev
+* GUIView
 
 and implement GameApplication class with new controller (GUIGameController)
 
