@@ -27,6 +27,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-      - run: pip install -r requirements.txt
+          cache-dependency-path: pyproject.toml
+      - run: pip install -e ".[dev]"
       # coverage threshold (fail_under) is set in .coveragerc
       - run: pytest --cov=app --cov-report=term-missing

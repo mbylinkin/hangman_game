@@ -2,14 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Console Hangman game in Python, written as an MVC exercise (architecture + testing practice). The only runtime dependency is Jinja2; everything else in `requirements.txt` is dev tooling.
+Console Hangman game in Python, written as an MVC exercise (architecture + testing practice). Dependencies are declared in `pyproject.toml`: Jinja2 is the only runtime dependency, dev tooling is in the `dev` extra.
 
 ## Commands
 
 Run everything from the repository root — `run.py` and `tests/main/test_game.py` open `data/words.txt` via a CWD-relative path.
 
 ```shell
-pip install -r requirements.txt
+pip install -e ".[dev]"
 python run.py                      # play (README's `python -m run.py` is wrong)
 
 make test                          # pytest .
