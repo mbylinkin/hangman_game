@@ -29,8 +29,23 @@ class BaseGameController:
     def play_turn(self, guess_letter: str) -> GameState:
         return self.game.play_turn(guess_letter)
 
+    def ask_new_game(self) -> bool:
+        return self.view.ask_new_game()
+
     def input_letter(self) -> str:
-        raise NotImplementedError()
+        """
+        Ask the player for a letter until it is valid, at most max_input_tries times.
+        Returns "*" when the tries are exceeded; it counts as a wrong guess.
+        """
+        for _ in range(self.max_input_tries):
+            guess_letter = self.view.ask_letter().lower()
+            success_try, validate_message = self.validate_letter(guess_letter)
+            if success_try:
+                return guess_letter
+            self.view.show_message(validate_message)
+
+        self.view.show_message("Number of tries exceeded.")
+        return "*"
 
     def validate_letter(self, guess_letter: str) -> tuple[bool, str]:
         if len(guess_letter) != 1:
@@ -54,21 +69,3 @@ class BaseGameController:
 class ConsoleGameController(BaseGameController):
     def __init__(self) -> None:
         super().__init__(ConsoleView())
-
-    def input_letter(self) -> str:
-        input_try = 0
-        while True:
-            input_try = input_try + 1
-            guess_letter = input("Input letter:").lower()
-            success_try, validate_message = self.validate_letter(guess_letter)
-
-            if success_try:
-                return guess_letter
-            else:
-                print(validate_message)
-
-            if not success_try and input_try >= self.max_input_tries:
-                print("Number of tries exceeded.")
-                break
-
-        return "*"

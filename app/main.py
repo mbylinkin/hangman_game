@@ -12,16 +12,12 @@ def get_game_controller() -> BaseGameController:
 class GameApplication:
     """Game application."""
 
-    def __init__(self, vocabulary: WordVocabulary) -> None:
-        self.controller = get_game_controller()
+    def __init__(self, vocabulary: WordVocabulary, controller: BaseGameController | None = None) -> None:
+        self.controller = controller or get_game_controller()
         self.vocabulary = vocabulary
 
     def loop(self) -> None:
-        while True:
-            answer = input('Start new game? (y/n):').lower()
-            if answer != 'y':
-                break
-
+        while self.controller.ask_new_game():
             self.play_game()
 
     def play_game(self) -> None:
