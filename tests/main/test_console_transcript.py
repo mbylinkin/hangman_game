@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from pytest_mock.plugin import MockerFixture
 
-from app import cli
+from hangman import cli
 
 TRANSCRIPT_PATH = Path(__file__).resolve().parent.parent / 'data' / 'console_transcript.txt'
 
@@ -24,7 +24,7 @@ def test_console_output_matches_transcript(mocker: MockerFixture, capsys: pytest
         print(prompt, end='')
         return next(answers)
 
-    mocker.patch('app.input.random', random.Random(42))
+    mocker.patch('hangman.input.random', random.Random(42))
     mocker.patch('builtins.input', side_effect=fake_input)
     cli.main([])
     assert next(answers, None) is None, 'not all player input was used'

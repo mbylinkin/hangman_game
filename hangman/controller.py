@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from app.const import GameState
-from app.const import MAX_LETTER_INPUT_TRIES
-from app.model import Game
-from app.view import BaseView
-from app.view import ConsoleView
+from hangman.const import GameState
+from hangman.const import MAX_LETTER_INPUT_TRIES
+from hangman.model import Game
+from hangman.view import BaseView
+from hangman.view import ConsoleView
 
 
 class BaseGameController:

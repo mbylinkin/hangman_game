@@ -8,12 +8,12 @@ from functools import partial
 from tkinter import messagebox
 from typing import Literal
 
-from app.const import GameState
-from app.controller import BaseGameController
-from app.input import WordVocabulary
-from app.main import GameApplication
-from app.model import Game
-from app.view import BaseView
+from hangman.const import GameState
+from hangman.controller import BaseGameController
+from hangman.input import WordVocabulary
+from hangman.main import GameApplication
+from hangman.model import Game
+from hangman.view import BaseView
 
 # Hangman parts in the order they appear, one per error (same stages as the ASCII templates).
 HANGMAN_PARTS = ('head', 'body', 'left_arm', 'right_arm', 'left_leg', 'right_leg')

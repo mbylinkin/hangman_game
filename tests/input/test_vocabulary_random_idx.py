@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytest_mock.plugin import MockerFixture
 
-from app.input import WordVocabulary
+from hangman.input import WordVocabulary
 
 
 def test_random_idx_within_range(read_words_mock: MagicMock) -> None:
@@ -62,7 +62,7 @@ def test_random_idx_unique_until_exhausted(read_words_mock: MagicMock) -> None:
 
 
 def test_random_idx_empty_vocabulary(mocker: MockerFixture) -> None:
-    mocker.patch('app.input.read_words_from_file', return_value=[])
+    mocker.patch('hangman.input.read_words_from_file', return_value=[])
     instance = WordVocabulary('empty_file.txt')
     with pytest.raises(ValueError, match='Vocabulary is empty'):
         instance.random_idx()

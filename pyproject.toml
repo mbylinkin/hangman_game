@@ -21,10 +21,10 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
-hangman = "app.cli:main"
+hangman = "hangman.cli:main"
 
 [tool.setuptools]
-packages = ["app"]
+packages = ["hangman"]
 
 [tool.setuptools.package-data]
-app = ["data/*.txt"]
+hangman = ["data/*.txt"]

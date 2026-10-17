@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.controller import ConsoleGameController
+from hangman.controller import ConsoleGameController
 
 
 def test_valid_lowercase_letter(started_controller: ConsoleGameController) -> None:

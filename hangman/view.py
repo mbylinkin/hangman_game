@@ -3,9 +3,9 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 
-from app import templates
-from app.const import GameState
-from app.model import Game
+from hangman import templates
+from hangman.const import GameState
+from hangman.model import Game
 
 
 class BaseView(ABC):

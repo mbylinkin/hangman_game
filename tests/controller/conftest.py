@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from app.controller import BaseGameController
-from app.controller import ConsoleGameController
+from hangman.controller import BaseGameController
+from hangman.controller import ConsoleGameController
 from tests.conftest import FakeView
 
 

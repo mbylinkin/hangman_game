@@ -8,7 +8,7 @@ Console Hangman game in Python, written as an MVC exercise (architecture + testi
 
 ```shell
 pip install -e ".[dev]"            # also installs the `hangman` command
-hangman                            # play in the console (same as `python run.py` / `python -m app`)
+hangman                            # play in the console (same as `python run.py` / `python -m hangman`)
 hangman --gui                      # play in a tkinter window
 
 make test                          # pytest .
@@ -18,22 +18,22 @@ pytest tests/model/test_game_play.py::test_game_play_turn_guessed_letter   # sin
 make lint                          # pre-commit run --all-files: ruff check --fix, ruff format, mypy (config in ruff.toml)
 ```
 
-CI (`.github/workflows/ci.yml`) runs the same pre-commit hooks and `pytest --cov=app` on Python 3.10, 3.12 and 3.13 for every PR and push to `main`.
+CI (`.github/workflows/ci.yml`) runs the same pre-commit hooks and `pytest --cov=hangman` on Python 3.10, 3.12 and 3.13 for every PR and push to `main`.
 
 ## Architecture
 
-Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController` (`app/controller.py`) → `Game` (`app/model.py`) and `ConsoleView` (`app/view.py`).
+Flow: `run.py` → `GameApplication` (`hangman/main.py`) → `ConsoleGameController` (`hangman/controller.py`) → `Game` (`hangman/model.py`) and `ConsoleView` (`hangman/view.py`).
 
 - All user input/output goes through the abstract `BaseView` (`render`, `ask_new_game`, `ask_letter`, `show_message` — all `@abstractmethod`, a view missing one cannot be instantiated); `ConsoleView` is the only place with `input()`/`print()`. Keep it that way — controller, model and `main.py` must stay console-free.
-- `TkView` (`app/gui.py`) is the window view. Its `ask_letter()` blocks in `root.wait_variable()` (a nested Tk event loop) until a letter button/key is pressed, so the pull-style controller works unchanged. Closing the window while waiting raises `GameClosed`, caught in `run_gui()`. tkinter is imported only in `app/gui.py` and only for `run.py --gui` — keep the console path tkinter-free.
+- `TkView` (`hangman/gui.py`) is the window view. Its `ask_letter()` blocks in `root.wait_variable()` (a nested Tk event loop) until a letter button/key is pressed, so the pull-style controller works unchanged. Closing the window while waiting raises `GameClosed`, caught in `run_gui()`. tkinter is imported only in `hangman/gui.py` and only for `run.py --gui` — keep the console path tkinter-free.
 - `GameApplication.loop()` repeats `play_game()` while `controller.ask_new_game()`; `play_game()` drives each turn: `start_next_turn()` → `render()` → `input_letter()` → `play_turn()`, until `game_pending()` is false. The controller is injected via `GameApplication(vocabulary, controller=...)`, defaulting to `get_game_controller()`.
 - `BaseGameController(view)` holds the `Game` and the view and works with any `BaseView`. `input_letter()` asks the view up to `MAX_LETTER_INPUT_TRIES` times, shows validation messages via `view.show_message`, then returns the sentinel `"*"` (counted as a wrong guess). `ConsoleGameController` only binds `ConsoleView`.
 - `Game` is the single source of game state: `errors`, `guessed` letters, `turn_number` (0 = no turn started) and `guess_letter` ("" until the current turn is played). `current_word` is derived from `secret_word` + `guessed` — don't store it. `start_next_turn()` → `play_turn(letter)` per turn; `play_turn` before any turn raises `RuntimeError`. `history` is a list of frozen `Move(number, letter, hit)`, not read by the game itself.
-- `GameState` (`app/const.py`): `LOST` = `MAX_GUESS_ERRORS` reached, `WON` = player guessed the word. Hidden letters are `_` in `current_word`.
-- `ConsoleView` renders the string templates from `app/templates.py` with `str.format` (`{name}` placeholders, literal braces must be doubled; a misspelled placeholder raises `KeyError`); the hangman drawing is looked up by error count in `head_ascii`/`body_ascii`/`legs_ascii` (keys 0..6, tied to `MAX_GUESS_ERRORS`).
-- Entry point is `app/cli.py:main(argv)` (`[project.scripts] hangman`); `run.py` and `app/__main__.py` only call it.
-- `WordVocabulary` (`app/input.py`) loads `app/data/words.txt` — package data (`[tool.setuptools.package-data]`), so it ships with `pip install .`; path in `app/const.py:WORDS_PATH` and returns random words without repeats, tracking used indices.
+- `GameState` (`hangman/const.py`): `LOST` = `MAX_GUESS_ERRORS` reached, `WON` = player guessed the word. Hidden letters are `_` in `current_word`.
+- `ConsoleView` renders the string templates from `hangman/templates.py` with `str.format` (`{name}` placeholders, literal braces must be doubled; a misspelled placeholder raises `KeyError`); the hangman drawing is looked up by error count in `head_ascii`/`body_ascii`/`legs_ascii` (keys 0..6, tied to `MAX_GUESS_ERRORS`).
+- Entry point is `hangman/cli.py:main(argv)` (`[project.scripts] hangman`); `run.py` and `hangman/__main__.py` only call it.
+- `WordVocabulary` (`hangman/input.py`) loads `hangman/data/words.txt` — package data (`[tool.setuptools.package-data]`), so it ships with `pip install .`; path in `hangman/const.py:WORDS_PATH` and returns random words without repeats, tracking used indices.
 
 ## Tests
 
-`tests/` mirrors the modules (`cli/`, `controller/`, `gui/`, `input/`, `main/`, `model/`, `view/`). GUI tests share one hidden session `Tk` root and get a `Toplevel` per test (`tk_view` fixture; a `Tk()` per test intermittently fails on Windows); `autoplay()` in `tests/gui/conftest.py` presses letters on Tk timers while `ask_letter()` waits. Without a display they are skipped; CI runs them under `xvfb-run` with `HANGMAN_REQUIRE_GUI=1`, which turns that skip into a failure. `tests/main/test_console_transcript.py` plays two seeded games through `app.cli.main([])` and compares the whole console output with `tests/data/console_transcript.txt` byte for byte — update that file only for intended output changes (it is excluded from whitespace hooks). Controller/application tests use `FakeView` from `tests/conftest.py` (`fake_view` fixture: preset `new_game_answers`/`letters`, recorded `messages`/`rendered_states`); only `ConsoleView` tests and the console end-to-end tests in `tests/main` patch `builtins.input`. File reading is mocked via `mocker.patch('app.input.read_words_from_file', ...)` (pytest-mock). The `name-tests-test` pre-commit hook requires every file in `tests/` except `conftest.py`/`__init__.py` to be named `test_*.py` — shared test helpers go into `conftest.py`.
+`tests/` mirrors the modules (`cli/`, `controller/`, `gui/`, `input/`, `main/`, `model/`, `view/`). GUI tests share one hidden session `Tk` root and get a `Toplevel` per test (`tk_view` fixture; a `Tk()` per test intermittently fails on Windows); `autoplay()` in `tests/gui/conftest.py` presses letters on Tk timers while `ask_letter()` waits. Without a display they are skipped; CI runs them under `xvfb-run` with `HANGMAN_REQUIRE_GUI=1`, which turns that skip into a failure. `tests/main/test_console_transcript.py` plays two seeded games through `hangman.cli.main([])` and compares the whole console output with `tests/data/console_transcript.txt` byte for byte — update that file only for intended output changes (it is excluded from whitespace hooks). Controller/application tests use `FakeView` from `tests/conftest.py` (`fake_view` fixture: preset `new_game_answers`/`letters`, recorded `messages`/`rendered_states`); only `ConsoleView` tests and the console end-to-end tests in `tests/main` patch `builtins.input`. File reading is mocked via `mocker.patch('hangman.input.read_words_from_file', ...)` (pytest-mock). The `name-tests-test` pre-commit hook requires every file in `tests/` except `conftest.py`/`__init__.py` to be named `test_*.py` — shared test helpers go into `conftest.py`.

@@ -4,12 +4,12 @@ import pytest
 
 pytest.importorskip('tkinter')
 
-from app.const import MAX_GUESS_ERRORS  # noqa: E402
-from app.gui import format_word  # noqa: E402
-from app.gui import game_result_text  # noqa: E402
-from app.gui import HANGMAN_PARTS  # noqa: E402
-from app.gui import hangman_parts  # noqa: E402
-from app.model import Game  # noqa: E402
+from hangman.const import MAX_GUESS_ERRORS  # noqa: E402
+from hangman.gui import format_word  # noqa: E402
+from hangman.gui import game_result_text  # noqa: E402
+from hangman.gui import HANGMAN_PARTS  # noqa: E402
+from hangman.gui import hangman_parts  # noqa: E402
+from hangman.model import Game  # noqa: E402
 
 
 def test_one_part_per_error_up_to_max() -> None:

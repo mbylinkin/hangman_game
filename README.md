@@ -33,7 +33,7 @@ In a window (tkinter):
 hangman --gui
 ```
 
-Without installing, from a clone: `python run.py [--gui]` or `python -m app [--gui]`.
+Without installing, from a clone: `python run.py [--gui]` or `python -m hangman [--gui]`.
 
 Click letter buttons or type letters on the keyboard; closing the window ends the game.
 tkinter is part of the standard library on Windows and macOS; on Linux it may need a system package (e.g. `sudo apt install python3-tk`).
@@ -57,7 +57,7 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 <summary>Directory structure</summary>
 
 ```shell
-├── app
+├── hangman
 │   ├── data
 │   │   └── words.txt
 │   ├── __main__.py
@@ -82,15 +82,15 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 
 </details>
 
-* [app/cli.py](app/cli.py) Command line entry point: the `hangman` command, `python -m app` and [run.py](run.py)
-* [app/main.py](app/main.py) Holds class GameApplication which holds Controller class and initiates main game loop
-* [app/controller.py](app/controller.py) Holds controller class, which holds Model (Game) class, View class and is responsible for communication with model and rendering game
-* [app/model.py](app/model.py) Holds Logic of the Game
-* [app/view.py](app/view.py) View interface `BaseView` and the console view
-* [app/gui.py](app/gui.py) Tkinter window view `TkView`
-* [app/templates.py](app/templates.py) A templates file for rendering
-* [app/input.py](app/input.py) Vocabulary class for generating random word
-* [app/data/words.txt](app/data/words.txt) Vocabulary for generating random words, packaged with the game. Used in WordVocabulary class
+* [hangman/cli.py](hangman/cli.py) Command line entry point: the `hangman` command, `python -m hangman` and [run.py](run.py)
+* [hangman/main.py](hangman/main.py) Holds class GameApplication which holds Controller class and initiates main game loop
+* [hangman/controller.py](hangman/controller.py) Holds controller class, which holds Model (Game) class, View class and is responsible for communication with model and rendering game
+* [hangman/model.py](hangman/model.py) Holds Logic of the Game
+* [hangman/view.py](hangman/view.py) View interface `BaseView` and the console view
+* [hangman/gui.py](hangman/gui.py) Tkinter window view `TkView`
+* [hangman/templates.py](hangman/templates.py) A templates file for rendering
+* [hangman/input.py](hangman/input.py) Vocabulary class for generating random word
+* [hangman/data/words.txt](hangman/data/words.txt) Vocabulary for generating random words, packaged with the game. Used in WordVocabulary class
 * [tests](tests) a folder, containing tests
 
 

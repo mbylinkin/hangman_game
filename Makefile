@@ -1,7 +1,7 @@
 test:
 	pytest .
 test-cov:
-	pytest -v --cov=app --cov-report=html
+	pytest -v --cov=hangman --cov-report=html
 
 lint:
 	pre-commit run --all-files

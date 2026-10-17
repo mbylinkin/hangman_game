@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from app.model import Game
-from app.view import BaseView
+from hangman.model import Game
+from hangman.view import BaseView
 
 
 def test_base_view_cannot_be_instantiated() -> None:
