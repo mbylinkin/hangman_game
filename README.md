@@ -14,11 +14,21 @@ To only play the game, `pip install -e .` is enough.
 
 ## Running game
 
-To run game, execute run.py:
+To run game in the console, execute run.py:
 
 ```shell
 python run.py
 ```
+
+To play in a window (tkinter):
+
+```shell
+python run.py --gui
+```
+
+Click letter buttons or type letters on the keyboard; closing the window ends the game.
+tkinter is part of the standard library on Windows and macOS; on Linux it may need a system package (e.g. `sudo apt install python3-tk`).
+The console game works without it.
 
 ## Gameplay
 
@@ -41,6 +51,7 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 ├── app
 │   ├── const.py
 │   ├── controller.py
+│   ├── gui.py
 │   ├── input.py
 │   ├── main.py
 │   ├── model.py
@@ -64,7 +75,8 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 * [app/main.py](app/main.py) Holds class GameApplication which holds Controller class and initiates main game loop
 * [app/controller.py](app/controller.py) Holds controller class, which holds Model (Game) class, View class and is responsible for communication with model and rendering game
 * [app/model.py](app/model.py) Holds Logic of the Game
-* [app/view.py](app/view.py) A view for rendering game
+* [app/view.py](app/view.py) View interface `BaseView` and the console view
+* [app/gui.py](app/gui.py) Tkinter window view `TkView`
 * [app/templates.py](app/templates.py) A templates file for rendering
 * [app/input.py](app/input.py) Vocabulary class for generating random word
 * [data/words.txt](data/words.txt) Vocabulary for generating random words. Used in WordVocabulary class
@@ -104,17 +116,15 @@ make lint
 
 ## Further development
 
-Application is written for console mode, but due to MVC pattern game logic and user interface are separated:
+Due to MVC pattern game logic and user interface are separated:
 all user input and output goes through the view interface `BaseView` (`render`, `ask_new_game`, `ask_letter`, `show_message`),
-the controller and the game model do not use the console.
+the controller and the game model do not use the console or the window.
 
-So, to add a GUI it is enough to write a `GUIView(BaseView)` class and run the game with it:
+There are two views: `ConsoleView` and the tkinter `TkView`. To add another user interface it is enough to write
+a `BaseView` subclass and run the game with it:
 ```python
-GameApplication(vocabulary, controller=BaseGameController(GUIView()))
+GameApplication(vocabulary, controller=BaseGameController(MyView()))
 ```
 
-The controller asks the view for input and waits for the answer, which fits GUI libraries with a blocking read loop (like PySimpleGUI `window.read()`).
-
-An example of GUI can be taken [from here](https://realpython.com/hangman-python-pysimplegui/).
-
-Or maybe somewhere else.
+The controller asks the view for input and waits for the answer. `TkView` does it with tkinter `wait_variable()`,
+which keeps processing window events until the player presses a letter.
