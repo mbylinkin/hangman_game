@@ -8,19 +8,26 @@ from app.view import ConsoleView
 
 
 class BaseGameController:
-    def __init__(self) -> None:
-        self.current_game: Game = None  # type: ignore
-        self.view: BaseView = None  # type: ignore
+    def __init__(self, view: BaseView) -> None:
+        self.current_game: Game | None = None
+        self.view = view
         self.max_input_tries = MAX_LETTER_INPUT_TRIES
+
+    @property
+    def game(self) -> Game:
+        """Current game; raises if no game is started."""
+        if self.current_game is None:
+            raise RuntimeError('Game is not started, call start_game() first.')
+        return self.current_game
 
     def start_game(self, random_word: str) -> None:
         self.current_game = Game(random_word)
 
     def start_next_turn(self) -> None:
-        self.current_game.start_next_turn()
+        self.game.start_next_turn()
 
     def play_turn(self, guess_letter: str) -> GameState:
-        return self.current_game.play_turn(guess_letter)
+        return self.game.play_turn(guess_letter)
 
     def input_letter(self) -> str:
         raise NotImplementedError()
@@ -30,15 +37,15 @@ class BaseGameController:
             return False, 'Your input is not a single letter. Try again.'
         elif not guess_letter.isalpha():
             return False, 'Your input is not a letter. Try again.'
-        elif guess_letter in self.current_game.errors or guess_letter in self.current_game.current_word:
+        elif guess_letter in self.game.errors or guess_letter in self.game.current_word:
             return False, 'You already guessed this letter. Try again.'
         return True, guess_letter
 
     def render(self) -> None:
-        self.view.render(self.current_game)
+        self.view.render(self.game)
 
     def game_state(self) -> GameState:
-        return self.current_game.state()
+        return self.game.state()
 
     def game_pending(self) -> bool:
         return self.game_state() == GameState.ONGOING
@@ -46,8 +53,7 @@ class BaseGameController:
 
 class ConsoleGameController(BaseGameController):
     def __init__(self) -> None:
-        super().__init__()
-        self.view = ConsoleView()
+        super().__init__(ConsoleView())
 
     def input_letter(self) -> str:
         input_try = 0

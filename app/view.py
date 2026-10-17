@@ -49,12 +49,12 @@ class ConsoleView(BaseView):
         print(rendered_template)
 
     def render_game_over(self, current_game: Game) -> None:
-        result = 'YOU LOSE :(' if current_game.state() == GameState.PLAYER_1_WINS else 'YOU WIN :)'
+        result = 'YOU LOSE :(' if current_game.state() == GameState.LOST else 'YOU WIN :)'
         template_text = templates.template_game_over
         template = Template(template_text)
         rendered_template = template.render(
             message=result,
-            round=current_game.current_turn.turn_number,
+            round=current_game.turn.turn_number,
             secret_word=current_game.secret_word.upper(),
             current_word=current_game.current_word,
         )

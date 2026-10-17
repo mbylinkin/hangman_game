@@ -24,4 +24,4 @@ def test_init_invalid_inputs() -> None:
     """
     secret_word = 123  # invalid input
     with pytest.raises(TypeError):
-        Game(secret_word)  # type: ignore
+        Game(secret_word)  # type: ignore[arg-type]

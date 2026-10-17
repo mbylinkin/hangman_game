@@ -28,7 +28,7 @@ Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController`
 - `GameApplication.loop()` asks "Start new game?" and `play_game()` drives each turn: `start_next_turn()` → `render()` → `input_letter()` → `play_turn()`, until `game_pending()` is false. `get_game_controller()` is the seam for swapping in a different (e.g. GUI) controller.
 - `BaseGameController` holds the `Game` and a `BaseView`; subclasses implement `input_letter()` (console version allows `MAX_LETTER_INPUT_TRIES` invalid attempts, then returns the sentinel `"*"`).
 - Model state is split: `Game` keeps `current_word` / `errors`, and each `GameTurn` gets a deep copy of them, mutates its own copy in `play()`, and `Game.play_turn()` copies the result back. `GameTurn.new_turn()` builds the next turn from the previous one; `Game.state()` is computed from `current_turn`, while `validate_letter()` reads `Game.errors` / `Game.current_word` — keep both in sync when changing the model.
-- `GameState` (`app/const.py`): `PLAYER_1_WINS` = computer wins (player **lost**, `MAX_GUESS_ERRORS` reached), `PLAYER_2_WINS` = player guessed the word. Hidden letters are `_` in `current_word`.
+- `GameState` (`app/const.py`): `LOST` = `MAX_GUESS_ERRORS` reached, `WON` = player guessed the word. Hidden letters are `_` in `current_word`.
 - `ConsoleView` renders Jinja2 string templates from `app/templates.py`; the hangman drawing is looked up by error count in `head_ascii`/`body_ascii`/`legs_ascii` (keys 0..6, tied to `MAX_GUESS_ERRORS`).
 - `WordVocabulary` (`app/input.py`) loads `data/words.txt` (one word per line) and returns random words without repeats, tracking used indices.
 

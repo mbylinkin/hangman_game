@@ -115,3 +115,11 @@ def test_game_turn_play_regex_special_char(game_turn_fixture: GameTurn) -> None:
     game_turn_fixture.play("*")
     assert game_turn_fixture.current_word == "____"
     assert game_turn_fixture.errors == ["*"]
+
+
+def test_game_play_turn_before_start(game_fixture: Game) -> None:
+    """
+    Playing a turn before start_next_turn() raises a clear error.
+    """
+    with pytest.raises(RuntimeError, match='Turn is not started'):
+        game_fixture.play_turn("t")

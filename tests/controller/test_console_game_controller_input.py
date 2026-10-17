@@ -29,6 +29,6 @@ def test_input_letter_tries_exceeded(started_controller: ConsoleGameController) 
 
 
 def test_input_letter_in_errors(started_controller: ConsoleGameController) -> None:
-    started_controller.current_game.errors = ["a"]
+    started_controller.game.errors = ["a"]
     with mock.patch("builtins.input", side_effect=["a", "ab", "bc", "c"]):
         assert started_controller.input_letter() == "*"
