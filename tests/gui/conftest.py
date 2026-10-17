@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from collections.abc import Iterator
 
 import pytest
@@ -20,6 +21,8 @@ def tk_session_root() -> Iterator[tk.Tk]:
     try:
         root = tk.Tk()
     except tk.TclError as error:
+        if os.environ.get('HANGMAN_REQUIRE_GUI'):
+            pytest.fail(f'HANGMAN_REQUIRE_GUI is set, but tkinter cannot open a window: {error}')
         pytest.skip(f'no display for tkinter: {error}')
     root.withdraw()
     yield root
