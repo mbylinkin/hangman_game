@@ -6,25 +6,34 @@
 
 ## Installation
 
-Python 3.10+ is required. Clone the repository and install the application with development dependencies:
+Python 3.10+ is required. The game has no runtime dependencies.
+
+To play, install it from a clone (or straight from GitHub) — this adds the `hangman` command:
+```shell
+pip install .
+pip install git+https://github.com/mbylinkin/hangman_game.git
+```
+
+For development, install it in editable mode with development dependencies:
 ```shell
 pip install -e ".[dev]"
 ```
-To only play the game, `pip install -e .` is enough.
 
 ## Running game
 
-To run game in the console, execute run.py:
+In the console:
 
 ```shell
-python run.py
+hangman
 ```
 
-To play in a window (tkinter):
+In a window (tkinter):
 
 ```shell
-python run.py --gui
+hangman --gui
 ```
+
+Without installing, from a clone: `python run.py [--gui]` or `python -m app [--gui]`.
 
 Click letter buttons or type letters on the keyboard; closing the window ends the game.
 tkinter is part of the standard library on Windows and macOS; on Linux it may need a system package (e.g. `sudo apt install python3-tk`).
@@ -49,6 +58,10 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 
 ```shell
 ├── app
+│   ├── data
+│   │   └── words.txt
+│   ├── __main__.py
+│   ├── cli.py
 │   ├── const.py
 │   ├── controller.py
 │   ├── gui.py
@@ -57,8 +70,6 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 │   ├── model.py
 │   ├── templates.py
 │   └── view.py
-├── data
-│   └── words.txt
 ├── tests
 │   └── ...
 ├── LICENSE
@@ -71,7 +82,7 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 
 </details>
 
-* [run.py](run.py) File for creating and running application
+* [app/cli.py](app/cli.py) Command line entry point: the `hangman` command, `python -m app` and [run.py](run.py)
 * [app/main.py](app/main.py) Holds class GameApplication which holds Controller class and initiates main game loop
 * [app/controller.py](app/controller.py) Holds controller class, which holds Model (Game) class, View class and is responsible for communication with model and rendering game
 * [app/model.py](app/model.py) Holds Logic of the Game
@@ -79,7 +90,7 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 * [app/gui.py](app/gui.py) Tkinter window view `TkView`
 * [app/templates.py](app/templates.py) A templates file for rendering
 * [app/input.py](app/input.py) Vocabulary class for generating random word
-* [data/words.txt](data/words.txt) Vocabulary for generating random words. Used in WordVocabulary class
+* [app/data/words.txt](app/data/words.txt) Vocabulary for generating random words, packaged with the game. Used in WordVocabulary class
 * [tests](tests) a folder, containing tests
 
 

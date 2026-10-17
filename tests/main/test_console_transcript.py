@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from pytest_mock.plugin import MockerFixture
 
-import run
+from app import cli
 
 TRANSCRIPT_PATH = Path(__file__).resolve().parent.parent / 'data' / 'console_transcript.txt'
 
@@ -26,6 +26,6 @@ def test_console_output_matches_transcript(mocker: MockerFixture, capsys: pytest
 
     mocker.patch('app.input.random', random.Random(42))
     mocker.patch('builtins.input', side_effect=fake_input)
-    run.main([])
+    cli.main([])
     assert next(answers, None) is None, 'not all player input was used'
     assert capsys.readouterr().out == TRANSCRIPT_PATH.read_text(encoding='utf-8')
