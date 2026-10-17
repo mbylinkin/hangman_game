@@ -7,9 +7,9 @@ Console Hangman game in Python, written as an MVC exercise (architecture + testi
 ## Commands
 
 ```shell
-pip install -e ".[dev]"
-python run.py                      # play in the console
-python run.py --gui                # play in a tkinter window
+pip install -e ".[dev]"            # also installs the `hangman` command
+hangman                            # play in the console (same as `python run.py` / `python -m app`)
+hangman --gui                      # play in a tkinter window
 
 make test                          # pytest .
 make test-cov                      # HTML coverage -> tests/coverage/, fails under 80% (.coveragerc)
@@ -31,8 +31,9 @@ Flow: `run.py` → `GameApplication` (`app/main.py`) → `ConsoleGameController`
 - `Game` is the single source of game state: `errors`, `guessed` letters, `turn_number` (0 = no turn started) and `guess_letter` ("" until the current turn is played). `current_word` is derived from `secret_word` + `guessed` — don't store it. `start_next_turn()` → `play_turn(letter)` per turn; `play_turn` before any turn raises `RuntimeError`. `history` is a list of frozen `Move(number, letter, hit)`, not read by the game itself.
 - `GameState` (`app/const.py`): `LOST` = `MAX_GUESS_ERRORS` reached, `WON` = player guessed the word. Hidden letters are `_` in `current_word`.
 - `ConsoleView` renders the string templates from `app/templates.py` with `str.format` (`{name}` placeholders, literal braces must be doubled; a misspelled placeholder raises `KeyError`); the hangman drawing is looked up by error count in `head_ascii`/`body_ascii`/`legs_ascii` (keys 0..6, tied to `MAX_GUESS_ERRORS`).
-- `WordVocabulary` (`app/input.py`) loads `data/words.txt` (one word per line, path in `app/const.py:WORDS_PATH`, resolved from the package location) and returns random words without repeats, tracking used indices.
+- Entry point is `app/cli.py:main(argv)` (`[project.scripts] hangman`); `run.py` and `app/__main__.py` only call it.
+- `WordVocabulary` (`app/input.py`) loads `app/data/words.txt` — package data (`[tool.setuptools.package-data]`), so it ships with `pip install .`; path in `app/const.py:WORDS_PATH` and returns random words without repeats, tracking used indices.
 
 ## Tests
 
-`tests/` mirrors the modules (`controller/`, `gui/`, `input/`, `main/`, `model/`, `run/`, `view/`). GUI tests share one hidden session `Tk` root and get a `Toplevel` per test (`tk_view` fixture; a `Tk()` per test intermittently fails on Windows); `autoplay()` in `tests/gui/conftest.py` presses letters on Tk timers while `ask_letter()` waits. Without a display they are skipped; CI runs them under `xvfb-run` with `HANGMAN_REQUIRE_GUI=1`, which turns that skip into a failure. `tests/main/test_console_transcript.py` plays two seeded games through `run.main()` and compares the whole console output with `tests/data/console_transcript.txt` byte for byte — update that file only for intended output changes (it is excluded from whitespace hooks). Controller/application tests use `FakeView` from `tests/conftest.py` (`fake_view` fixture: preset `new_game_answers`/`letters`, recorded `messages`/`rendered_states`); only `ConsoleView` tests and the console end-to-end tests in `tests/main` patch `builtins.input`. File reading is mocked via `mocker.patch('app.input.read_words_from_file', ...)` (pytest-mock). The `name-tests-test` pre-commit hook requires every file in `tests/` except `conftest.py`/`__init__.py` to be named `test_*.py` — shared test helpers go into `conftest.py`.
+`tests/` mirrors the modules (`cli/`, `controller/`, `gui/`, `input/`, `main/`, `model/`, `view/`). GUI tests share one hidden session `Tk` root and get a `Toplevel` per test (`tk_view` fixture; a `Tk()` per test intermittently fails on Windows); `autoplay()` in `tests/gui/conftest.py` presses letters on Tk timers while `ask_letter()` waits. Without a display they are skipped; CI runs them under `xvfb-run` with `HANGMAN_REQUIRE_GUI=1`, which turns that skip into a failure. `tests/main/test_console_transcript.py` plays two seeded games through `app.cli.main([])` and compares the whole console output with `tests/data/console_transcript.txt` byte for byte — update that file only for intended output changes (it is excluded from whitespace hooks). Controller/application tests use `FakeView` from `tests/conftest.py` (`fake_view` fixture: preset `new_game_answers`/`letters`, recorded `messages`/`rendered_states`); only `ConsoleView` tests and the console end-to-end tests in `tests/main` patch `builtins.input`. File reading is mocked via `mocker.patch('app.input.read_words_from_file', ...)` (pytest-mock). The `name-tests-test` pre-commit hook requires every file in `tests/` except `conftest.py`/`__init__.py` to be named `test_*.py` — shared test helpers go into `conftest.py`.

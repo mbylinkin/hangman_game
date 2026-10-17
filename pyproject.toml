@@ -20,5 +20,11 @@ dev = [
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
+[project.scripts]
+hangman = "app.cli:main"
+
 [tool.setuptools]
 packages = ["app"]
+
+[tool.setuptools.package-data]
+app = ["data/*.txt"]
