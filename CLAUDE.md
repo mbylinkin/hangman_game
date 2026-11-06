@@ -12,7 +12,7 @@ hangman                            # play in the console (same as `python run.py
 hangman --gui                      # play in a tkinter window
 
 make test                          # pytest .
-make test-cov                      # HTML coverage -> tests/coverage/, fails under 80% (.coveragerc)
+make test-cov                      # HTML coverage -> tests/coverage/, fails under 95% (.coveragerc; raise it as coverage grows, never lower it)
 pytest tests/model/test_game_play.py::test_game_play_turn_guessed_letter   # single test
 
 make lint                          # pre-commit run --all-files: ruff check --fix, ruff format, mypy (config in ruff.toml)

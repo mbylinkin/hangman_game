@@ -6,5 +6,5 @@ omit = tests/*
 directory = tests/coverage
 
 [report]
-fail_under = 80
+fail_under = 95
 skip_empty = True
