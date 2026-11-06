@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Console Hangman game"
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = []
 
 # development tooling, not part of the package (PEP 735); installed by `uv sync`, pinned in uv.lock
