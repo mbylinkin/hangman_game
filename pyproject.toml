@@ -64,3 +64,7 @@ source_modules = [
 ]
 forbidden_modules = ["tkinter"]
 allow_indirect_imports = true
+
+# deptry: the game has no runtime dependencies, `dev` holds tooling only
+[tool.deptry]
+pep621_dev_dependency_groups = ["dev"]

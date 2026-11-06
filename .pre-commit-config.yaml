@@ -46,3 +46,11 @@ repos:
         additional_dependencies: [ast-grep-cli==0.51.1]
         pass_filenames: false
         files: ^(sgconfig\.yml|ast-grep/.*)$
+      # undeclared, unused and misplaced dependencies (config in pyproject.toml [tool.deptry])
+      - id: deptry
+        name: deptry
+        entry: deptry .
+        language: python
+        additional_dependencies: [deptry==0.25.1]
+        pass_filenames: false
+        files: ^(.*\.py|pyproject\.toml)$
