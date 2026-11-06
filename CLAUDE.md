@@ -32,7 +32,7 @@ CI (`.github/workflows/ci.yml`) runs `make lint`, `make test-cov` on Python 3.11
 - `make check` must pass before a change is done; CI runs the same targets.
 - Never disable a lint rule, contract or hook, or lower the coverage floor, to get a change through. An exception is narrow (one path and one rule, or one identifier), carries a reason in a comment, and needs a human decision. A vulnerability that cannot be fixed yet is ignored only by its ID in `osv-scanner.toml` (`[[IgnoredVulns]]` with `reason` and an `ignoreUntil` review date), never by turning the scan off.
 - `tests/data/console_transcript.txt` is expected output: change it only for an intended console output change.
-- `uv.lock` is generated: never edit it by hand; change dependencies with `uv add` / `uv remove` / `uv lock` and commit it together with `pyproject.toml`.
+- `uv.lock` is generated: never edit it by hand; change dependencies with `uv add` / `uv remove` / `uv lock` and commit it together with `pyproject.toml`. The mypy hook pins `pytest`/`pytest-mock` in `.pre-commit-config.yaml` to the versions in `uv.lock`: when the lock changes them, change the pins too.
 
 ## Architecture
 
