@@ -54,3 +54,8 @@ repos:
         additional_dependencies: [deptry==0.25.1]
         pass_filenames: false
         files: ^(.*\.py|pyproject\.toml)$
+  - repo: https://github.com/betterleaks/betterleaks
+    rev: v1.10.0
+    hooks:
+      # staged changes only; CI scans the whole git history (ci.yml, job "secrets")
+      - id: betterleaks
