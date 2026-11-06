@@ -1,0 +1,9 @@
+# Markdown lint (rumdl, markdownlint rule names)
+
+# The project writes one paragraph or sentence per line (like ruff with E501 ignored), so no line-length limit.
+[MD013]
+enabled = false
+
+# README uses a collapsible block for the directory tree.
+[MD033]
+allowed-elements = ["details", "summary"]

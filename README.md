@@ -9,12 +9,14 @@
 Python 3.10+ is required. The game has no runtime dependencies.
 
 To play, install it from a clone (or straight from GitHub) — this adds the `hangman` command:
+
 ```shell
 pip install .
 pip install git+https://github.com/mbylinkin/hangman_game.git
 ```
 
 For development, install it in editable mode with development dependencies:
+
 ```shell
 pip install -e ".[dev]"
 ```
@@ -49,9 +51,9 @@ The console game works without it.
 ## Application design
 
 Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller), the purpose was to get some practice in
+
 * architecture design of application
 * writing tests
-
 
 <details>
 <summary>Directory structure</summary>
@@ -93,34 +95,46 @@ Application is written in [MVC style](https://en.wikipedia.org/wiki/Model%E2%80%
 * [hangman/data/words.txt](hangman/data/words.txt) Vocabulary for generating random words, packaged with the game. Used in WordVocabulary class
 * [tests](tests) a folder, containing tests
 
-
 ## Testing
+
 pytest library is used for testing.
 
 Commands for running tests and coverage are in [Makefile](https://opensource.com/article/18/8/what-how-makefile).
 For tests run
+
 ```shell
 make test
 ```
+
 For test coverage, run
+
 ```shell
 make test-cov
 ```
-For tests and tests coverage run
+
+For all checks (linters and tests with coverage) run
+
 ```shell
-make all
+make check
 ```
 
 test-coverage files are saved to tests/coverage directory
 
 ## Linting
 
-[pre-commit](https://pre-commit.com/) runs [ruff](https://docs.astral.sh/ruff/) (lint + format, config in [ruff.toml](ruff.toml)) and mypy.
+[pre-commit](https://pre-commit.com/) runs [ruff](https://docs.astral.sh/ruff/) (lint + format, config in [ruff.toml](ruff.toml)), mypy
+and the checks adopted from [Dev Quality Gates](https://github.com/mokevnin/dev-quality-gates):
+import-linter (MVC layer contracts), ast-grep (console I/O only in `ConsoleView`), deptry, Betterleaks (secrets),
+jactionlint (GitHub Actions), agnix (agent instruction files), typos and rumdl (Markdown).
+Dependabot keeps actions, hooks and dev dependencies up to date.
 Install the git hook once after cloning:
+
 ```shell
 pre-commit install
 ```
+
 Run all checks manually:
+
 ```shell
 make lint
 ```
@@ -133,6 +147,7 @@ the controller and the game model do not use the console or the window.
 
 There are two views: `ConsoleView` and the tkinter `TkView`. To add another user interface it is enough to write
 a `BaseView` subclass and run the game with it:
+
 ```python
 GameApplication(vocabulary, controller=BaseGameController(MyView()))
 ```

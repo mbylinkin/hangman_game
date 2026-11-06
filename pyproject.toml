@@ -28,3 +28,43 @@ packages = ["hangman"]
 
 [tool.setuptools.package-data]
 hangman = ["data/*.txt"]
+
+# Architecture contracts (lint-imports), see CLAUDE.md "Architecture"
+[tool.importlinter]
+root_package = "hangman"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "MVC layers: higher layers may import lower ones, never the reverse"
+type = "layers"
+layers = [
+    "hangman.cli",
+    "hangman.gui",
+    "hangman.main",
+    "hangman.controller",
+    "hangman.view",
+    "hangman.model",
+    "hangman.input | hangman.templates",
+    "hangman.const",
+]
+
+[[tool.importlinter.contracts]]
+name = "tkinter is imported only in hangman.gui (the console path stays tkinter-free)"
+type = "forbidden"
+source_modules = [
+    "hangman.__main__",
+    "hangman.cli",
+    "hangman.main",
+    "hangman.controller",
+    "hangman.view",
+    "hangman.model",
+    "hangman.input",
+    "hangman.templates",
+    "hangman.const",
+]
+forbidden_modules = ["tkinter"]
+allow_indirect_imports = true
+
+# deptry: the game has no runtime dependencies, `dev` holds tooling only
+[tool.deptry]
+pep621_dev_dependency_groups = ["dev"]

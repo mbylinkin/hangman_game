@@ -1,0 +1,4 @@
+# Narrow exceptions: whole identifiers, not words, so real typos of these words are still reported.
+[default.extend-identifiers]
+hel_o = "hel_o"                  # partially guessed word in tests ("hello" with a hidden letter)
+valid_2nd_try = "valid_2nd_try"  # ordinal in a pytest id

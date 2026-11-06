@@ -1,0 +1,16 @@
+id: console-io-only-in-view
+language: python
+severity: error
+message: print()/input() outside ConsoleView
+note: |
+  All user input/output goes through BaseView; ConsoleView (hangman/view.py) is the only
+  place with input()/print(). Show text via view.show_message / view.render instead.
+rule:
+  any:
+    - pattern: print($$$)
+    - pattern: input($$$)
+files:
+  - hangman/**/*.py
+  - run.py
+ignores:
+  - hangman/view.py
