@@ -59,3 +59,8 @@ repos:
     hooks:
       # staged changes only; CI scans the whole git history (ci.yml, job "secrets")
       - id: betterleaks
+  - repo: https://github.com/jdx/jactionlint
+    rev: v2.5.0
+    hooks:
+      # GitHub Actions workflows and dependabot.yml
+      - id: jactionlint-shellcheck  # bundles shellcheck for the run: scripts
