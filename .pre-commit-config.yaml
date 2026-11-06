@@ -21,3 +21,13 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: [pytest, pytest-mock]
+  - repo: local
+    hooks:
+      # architecture contracts from pyproject.toml [tool.importlinter]
+      - id: import-linter
+        name: import-linter
+        entry: lint-imports
+        language: python
+        additional_dependencies: [import-linter==2.15]
+        pass_filenames: false
+        files: ^(hangman/.*\.py|pyproject\.toml)$
