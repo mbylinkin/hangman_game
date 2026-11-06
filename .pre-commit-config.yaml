@@ -20,7 +20,9 @@ repos:
     rev: v2.4.1
     hooks:
       - id: mypy
-        additional_dependencies: [pytest, pytest-mock]
+        # same versions as in uv.lock, so mypy checks the tests against the pytest that runs them;
+        # Dependabot does not update these: bump them by hand together with uv.lock
+        additional_dependencies: [pytest==9.2.0, pytest-mock==3.17.0]
   - repo: local
     hooks:
       # architecture contracts from pyproject.toml [tool.importlinter]
