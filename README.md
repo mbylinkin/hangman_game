@@ -6,7 +6,7 @@
 
 ## Installation
 
-Python 3.10+ is required. The game has no runtime dependencies.
+Python 3.11+ is required. The game has no runtime dependencies.
 
 To play, install it from a clone (or straight from GitHub) — this adds the `hangman` command:
 

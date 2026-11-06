@@ -24,7 +24,7 @@ make check                         # lint + test-cov: every check; it must pass 
 
 `make lint` runs: ruff (lint with `--fix`, format; `ruff.toml`), mypy, import-linter (MVC layers, tkinter only in `hangman.gui`; `[tool.importlinter]` in `pyproject.toml`), ast-grep (`print`/`input` only in `hangman/view.py`; rules and their tests in `ast-grep/`, `sgconfig.yml`), deptry (undeclared/unused dependencies), betterleaks (secrets in staged changes), jactionlint (workflows, `dependabot.yml`), agnix (`CLAUDE.md`/`AGENTS.md`), typos (`_typos.toml`), rumdl (Markdown; `.rumdl.toml`). Tool versions are pinned in `.pre-commit-config.yaml` only.
 
-CI (`.github/workflows/ci.yml`) runs `make lint`, `make test-cov` on Python 3.10, 3.12 and 3.13, and a Betterleaks scan of the whole git history, on every PR, push to `main` and weekly. CI sets `UV_LOCKED=1`: a `pyproject.toml` change without a matching `uv.lock` fails.
+CI (`.github/workflows/ci.yml`) runs `make lint`, `make test-cov` on Python 3.11, 3.12 and 3.13, and a Betterleaks scan of the whole git history, on every PR, push to `main` and weekly. CI sets `UV_LOCKED=1`: a `pyproject.toml` change without a matching `uv.lock` fails.
 
 ## Rules for changes
 
