@@ -70,3 +70,8 @@ repos:
       # CLAUDE.md / AGENTS.md; --strict: warnings fail too (they exit 0 otherwise)
       - id: agnix
         args: [--strict]
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.52.0
+    hooks:
+      - id: typos
+        args: []  # report only; the hook's default --write-changes would edit files silently
