@@ -131,7 +131,9 @@ test-coverage files are saved to tests/coverage directory
 and the checks adopted from [Dev Quality Gates](https://github.com/mokevnin/dev-quality-gates):
 import-linter (MVC layer contracts), ast-grep (console I/O only in `ConsoleView`), deptry, Betterleaks (secrets),
 jactionlint (GitHub Actions), agnix (agent instruction files), typos and rumdl (Markdown).
-Dependabot keeps actions, hooks and the locked dev dependencies up to date.
+Dependabot keeps actions, hooks and the locked dev dependencies up to date,
+and `make audit` ([OSV-Scanner](https://google.github.io/osv-scanner/)) checks `uv.lock` for known vulnerabilities
+(in CI on every change and weekly).
 Install the git hook once after cloning:
 
 ```shell

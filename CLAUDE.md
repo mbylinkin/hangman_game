@@ -20,16 +20,17 @@ uv run pytest tests/model/test_game_play.py::test_game_play_turn_guessed_letter 
 
 make lint                          # pre-commit run --all-files: every hook in .pre-commit-config.yaml (list below)
 make check                         # lint + test-cov: every check; it must pass before a change is done
+make audit                         # OSV-Scanner: known vulnerabilities in uv.lock (needs the network; manual pre-commit stage)
 ```
 
 `make lint` runs: ruff (lint with `--fix`, format; `ruff.toml`), mypy, import-linter (MVC layers, tkinter only in `hangman.gui`; `[tool.importlinter]` in `pyproject.toml`), ast-grep (`print`/`input` only in `hangman/view.py`; rules and their tests in `ast-grep/`, `sgconfig.yml`), deptry (undeclared/unused dependencies), betterleaks (secrets in staged changes), jactionlint (workflows, `dependabot.yml`), agnix (`CLAUDE.md`/`AGENTS.md`), typos (`_typos.toml`), rumdl (Markdown; `.rumdl.toml`). Tool versions are pinned in `.pre-commit-config.yaml` only.
 
-CI (`.github/workflows/ci.yml`) runs `make lint`, `make test-cov` on Python 3.11, 3.12 and 3.13, and a Betterleaks scan of the whole git history, on every PR, push to `main` and weekly. CI sets `UV_LOCKED=1`: a `pyproject.toml` change without a matching `uv.lock` fails.
+CI (`.github/workflows/ci.yml`) runs `make lint`, `make test-cov` on Python 3.11, 3.12 and 3.13, `make audit`, and a Betterleaks scan of the whole git history, on every PR, push to `main` and weekly. A new advisory can fail `make audit` without any change here: update the package (`uv lock --upgrade-package <pkg>`). CI sets `UV_LOCKED=1`: a `pyproject.toml` change without a matching `uv.lock` fails.
 
 ## Rules for changes
 
 - `make check` must pass before a change is done; CI runs the same targets.
-- Never disable a lint rule, contract or hook, or lower the coverage floor, to get a change through. An exception is narrow (one path and one rule, or one identifier), carries a reason in a comment, and needs a human decision.
+- Never disable a lint rule, contract or hook, or lower the coverage floor, to get a change through. An exception is narrow (one path and one rule, or one identifier), carries a reason in a comment, and needs a human decision. A vulnerability that cannot be fixed yet is ignored only by its ID in `osv-scanner.toml` (`[[IgnoredVulns]]` with `reason` and an `ignoreUntil` review date), never by turning the scan off.
 - `tests/data/console_transcript.txt` is expected output: change it only for an intended console output change.
 - `uv.lock` is generated: never edit it by hand; change dependencies with `uv add` / `uv remove` / `uv lock` and commit it together with `pyproject.toml`.
 

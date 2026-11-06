@@ -80,3 +80,11 @@ repos:
     hooks:
       - id: rumdl-check  # config in .rumdl.toml
         exclude: ^AGENTS\.md$  # symlink to CLAUDE.md, a plain file when core.symlinks=false
+  - repo: https://github.com/google/osv-scanner
+    rev: v2.7.0
+    hooks:
+      # known vulnerabilities in uv.lock; needs the network, so it is not a commit hook:
+      # run by `make audit` and by CI (job "vulnerabilities", also weekly)
+      - id: osv-scanner
+        args: [scan, source, --format=vertical, --lockfile=uv.lock]
+        stages: [manual]
