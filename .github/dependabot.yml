@@ -20,6 +20,9 @@ updates:
         patterns: ["*"]
   - package-ecosystem: pip
     directory: /
+    # No lockfile and open lower bounds (">="): pip already installs the latest versions.
+    # Only touch a requirement when a new release falls outside its range, not on every release.
+    versioning-strategy: increase-if-necessary
     schedule:
       interval: weekly
     cooldown:
