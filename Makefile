@@ -11,9 +11,13 @@ test-cov:
 lint:
 	$(RUN) pre-commit run --all-files
 
+# known vulnerabilities in uv.lock (OSV-Scanner); needs the network, CI also runs it weekly
+audit:
+	$(RUN) pre-commit run osv-scanner --hook-stage manual --all-files
+
 # every check; must pass before a change is done (CI runs the same targets)
 check: lint test-cov
 
 all: check
 
-.PHONY: test test-cov lint check all
+.PHONY: test test-cov lint audit check all
