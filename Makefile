@@ -13,7 +13,7 @@ lint:
 
 # known vulnerabilities in uv.lock (OSV-Scanner); needs the network, CI also runs it weekly
 audit:
-	$(RUN) pre-commit run osv-scanner --hook-stage manual --all-files
+	$(RUN) pre-commit run osv-scanner --hook-stage manual --all-files --verbose
 
 # every check; must pass before a change is done (CI runs the same targets)
 check: lint test-cov
