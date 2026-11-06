@@ -18,8 +18,10 @@ updates:
     groups:
       pre-commit:
         patterns: ["*"]
-  - package-ecosystem: pip
+  - package-ecosystem: uv
     directory: /
+    # update only uv.lock: lower bounds in pyproject.toml describe what the project needs, not the latest release
+    versioning-strategy: lockfile-only
     schedule:
       interval: weekly
     cooldown:
