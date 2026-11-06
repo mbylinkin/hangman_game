@@ -2,32 +2,36 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Console Hangman game in Python, written as an MVC exercise (architecture + testing practice). Dependencies are declared in `pyproject.toml`: there are no runtime dependencies (standard library only, tkinter for the GUI), dev tooling is in the `dev` extra.
+Console Hangman game in Python, written as an MVC exercise (architecture + testing practice). Dependencies are declared in `pyproject.toml`: there are no runtime dependencies (standard library only, tkinter for the GUI), dev tooling is in the `dev` dependency group (`[dependency-groups]`), pinned in `uv.lock`.
 
 ## Commands
 
-```shell
-pip install -e ".[dev]"            # also installs the `hangman` command
-hangman                            # play in the console (same as `python run.py` / `python -m hangman`)
-hangman --gui                      # play in a tkinter window
+The dev environment is managed by uv: run every command through `uv run` (no virtualenv activation; the `make` targets already do it).
 
-make test                          # pytest .
+```shell
+uv sync                            # create/update .venv from uv.lock (game in editable mode + dev group)
+uv run hangman                     # play in the console (same as `python run.py` / `python -m hangman`)
+uv run hangman --gui               # play in a tkinter window
+uv add --group dev <pkg>           # add a dev tool: updates pyproject.toml and uv.lock together
+
+make test                          # uv run pytest .
 make test-cov                      # HTML coverage -> tests/coverage/, fails under 95% (.coveragerc; raise it as coverage grows, never lower it)
-pytest tests/model/test_game_play.py::test_game_play_turn_guessed_letter   # single test
+uv run pytest tests/model/test_game_play.py::test_game_play_turn_guessed_letter   # single test
 
 make lint                          # pre-commit run --all-files: every hook in .pre-commit-config.yaml (list below)
 make check                         # lint + test-cov: every check; it must pass before a change is done
 ```
 
-`make lint` runs: ruff (lint with `--fix`, format; `ruff.toml`), mypy, import-linter (MVC layers, tkinter only in `hangman.gui`; `[tool.importlinter]` in `pyproject.toml`), ast-grep (`print`/`input` only in `hangman/view.py`; rules and their tests in `ast-grep/`, `sgconfig.yml`), deptry (undeclared/unused dependencies; `[tool.deptry]`), betterleaks (secrets in staged changes), jactionlint (workflows, `dependabot.yml`), agnix (`CLAUDE.md`/`AGENTS.md`), typos (`_typos.toml`), rumdl (Markdown; `.rumdl.toml`). Tool versions are pinned in `.pre-commit-config.yaml` only.
+`make lint` runs: ruff (lint with `--fix`, format; `ruff.toml`), mypy, import-linter (MVC layers, tkinter only in `hangman.gui`; `[tool.importlinter]` in `pyproject.toml`), ast-grep (`print`/`input` only in `hangman/view.py`; rules and their tests in `ast-grep/`, `sgconfig.yml`), deptry (undeclared/unused dependencies), betterleaks (secrets in staged changes), jactionlint (workflows, `dependabot.yml`), agnix (`CLAUDE.md`/`AGENTS.md`), typos (`_typos.toml`), rumdl (Markdown; `.rumdl.toml`). Tool versions are pinned in `.pre-commit-config.yaml` only.
 
-CI (`.github/workflows/ci.yml`) runs `make lint`, `make test-cov` on Python 3.10, 3.12 and 3.13, and a Betterleaks scan of the whole git history, on every PR, push to `main` and weekly.
+CI (`.github/workflows/ci.yml`) runs `make lint`, `make test-cov` on Python 3.10, 3.12 and 3.13, and a Betterleaks scan of the whole git history, on every PR, push to `main` and weekly. CI sets `UV_LOCKED=1`: a `pyproject.toml` change without a matching `uv.lock` fails.
 
 ## Rules for changes
 
 - `make check` must pass before a change is done; CI runs the same targets.
 - Never disable a lint rule, contract or hook, or lower the coverage floor, to get a change through. An exception is narrow (one path and one rule, or one identifier), carries a reason in a comment, and needs a human decision.
 - `tests/data/console_transcript.txt` is expected output: change it only for an intended console output change.
+- `uv.lock` is generated: never edit it by hand; change dependencies with `uv add` / `uv remove` / `uv lock` and commit it together with `pyproject.toml`.
 
 ## Architecture
 

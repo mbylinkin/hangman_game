@@ -7,7 +7,8 @@ license = { file = "LICENSE" }
 requires-python = ">=3.10"
 dependencies = []
 
-[project.optional-dependencies]
+# development tooling, not part of the package (PEP 735); installed by `uv sync`, pinned in uv.lock
+[dependency-groups]
 dev = [
     "pre-commit>=3.6",
     "pytest>=8",
@@ -64,7 +65,3 @@ source_modules = [
 ]
 forbidden_modules = ["tkinter"]
 allow_indirect_imports = true
-
-# deptry: the game has no runtime dependencies, `dev` holds tooling only
-[tool.deptry]
-pep621_dev_dependency_groups = ["dev"]

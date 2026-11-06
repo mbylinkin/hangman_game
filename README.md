@@ -15,11 +15,16 @@ pip install .
 pip install git+https://github.com/mbylinkin/hangman_game.git
 ```
 
-For development, install it in editable mode with development dependencies:
+For development, use [uv](https://docs.astral.sh/uv/getting-started/installation/). It creates `.venv` with the game
+(in editable mode) and the development tools, at the exact versions pinned in `uv.lock`:
 
 ```shell
-pip install -e ".[dev]"
+uv sync
+uv run hangman
 ```
+
+Commands run through `uv run` (the `make` targets below do this for you), so there is no virtualenv to activate.
+Without uv, `pip install -e . --group dev` (pip 25.1+) installs the same tools, but at the latest versions instead of the locked ones.
 
 ## Running game
 
@@ -126,11 +131,11 @@ test-coverage files are saved to tests/coverage directory
 and the checks adopted from [Dev Quality Gates](https://github.com/mokevnin/dev-quality-gates):
 import-linter (MVC layer contracts), ast-grep (console I/O only in `ConsoleView`), deptry, Betterleaks (secrets),
 jactionlint (GitHub Actions), agnix (agent instruction files), typos and rumdl (Markdown).
-Dependabot keeps actions, hooks and dev dependencies up to date.
+Dependabot keeps actions, hooks and the locked dev dependencies up to date.
 Install the git hook once after cloning:
 
 ```shell
-pre-commit install
+uv run pre-commit install
 ```
 
 Run all checks manually:
