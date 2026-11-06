@@ -112,17 +112,21 @@ For test coverage, run
 make test-cov
 ```
 
-For tests and tests coverage run
+For all checks (linters and tests with coverage) run
 
 ```shell
-make all
+make check
 ```
 
 test-coverage files are saved to tests/coverage directory
 
 ## Linting
 
-[pre-commit](https://pre-commit.com/) runs [ruff](https://docs.astral.sh/ruff/) (lint + format, config in [ruff.toml](ruff.toml)) and mypy.
+[pre-commit](https://pre-commit.com/) runs [ruff](https://docs.astral.sh/ruff/) (lint + format, config in [ruff.toml](ruff.toml)), mypy
+and the checks adopted from [Dev Quality Gates](https://github.com/mokevnin/dev-quality-gates):
+import-linter (MVC layer contracts), ast-grep (console I/O only in `ConsoleView`), deptry, Betterleaks (secrets),
+jactionlint (GitHub Actions), agnix (agent instruction files), typos and rumdl (Markdown).
+Dependabot keeps actions, hooks and dev dependencies up to date.
 Install the git hook once after cloning:
 
 ```shell
