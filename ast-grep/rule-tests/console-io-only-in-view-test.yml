@@ -1,0 +1,9 @@
+id: console-io-only-in-view
+valid:
+  - self.view.show_message("Wrong letter")
+  - self.printer.print_report()
+  - answer = self.view.ask_letter()
+invalid:
+  - print("Game over")
+  - letter = input("Input letter:")
+  - print(f"{word}", end="")

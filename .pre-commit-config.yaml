@@ -31,3 +31,18 @@ repos:
         additional_dependencies: [import-linter==2.15]
         pass_filenames: false
         files: ^(hangman/.*\.py|pyproject\.toml)$
+      # project rules in ast-grep/rules (sgconfig.yml), with their own tests
+      - id: ast-grep
+        name: ast-grep scan
+        entry: ast-grep scan
+        language: python
+        additional_dependencies: [ast-grep-cli==0.51.1]
+        pass_filenames: false
+        files: ^(.*\.py|sgconfig\.yml|ast-grep/.*)$
+      - id: ast-grep-test
+        name: ast-grep rule tests
+        entry: ast-grep test --skip-snapshot-tests
+        language: python
+        additional_dependencies: [ast-grep-cli==0.51.1]
+        pass_filenames: false
+        files: ^(sgconfig\.yml|ast-grep/.*)$
