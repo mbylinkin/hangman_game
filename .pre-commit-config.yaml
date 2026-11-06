@@ -64,3 +64,9 @@ repos:
     hooks:
       # GitHub Actions workflows and dependabot.yml
       - id: jactionlint-shellcheck  # bundles shellcheck for the run: scripts
+  - repo: https://github.com/agent-sh/agnix
+    rev: v0.61.0
+    hooks:
+      # CLAUDE.md / AGENTS.md; --strict: warnings fail too (they exit 0 otherwise)
+      - id: agnix
+        args: [--strict]
