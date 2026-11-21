@@ -11,7 +11,7 @@ repos:
       - id: name-tests-test
         args: [--pytest-test-first]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.3
+    rev: v0.17.5
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -57,12 +57,12 @@ repos:
         pass_filenames: false
         files: ^(.*\.py|pyproject\.toml)$
   - repo: https://github.com/betterleaks/betterleaks
-    rev: v1.10.0
+    rev: v1.10.1
     hooks:
       # staged changes only; CI scans the whole git history (ci.yml, job "secrets")
       - id: betterleaks
   - repo: https://github.com/jdx/jactionlint
-    rev: v2.5.0
+    rev: v2.6.0
     hooks:
       # GitHub Actions workflows and dependabot.yml
       - id: jactionlint-shellcheck  # bundles shellcheck for the run: scripts
@@ -73,17 +73,17 @@ repos:
       - id: agnix
         args: [--strict]
   - repo: https://github.com/crate-ci/typos
-    rev: v1.52.0
+    rev: v1.52.2
     hooks:
       - id: typos
         args: []  # report only; the hook's default --write-changes would edit files silently
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.3.2
+    rev: v0.3.4
     hooks:
       - id: rumdl-check  # config in .rumdl.toml
         exclude: ^AGENTS\.md$  # symlink to CLAUDE.md, a plain file when core.symlinks=false
   - repo: https://github.com/google/osv-scanner
-    rev: v2.7.0
+    rev: v2.7.1
     hooks:
       # known vulnerabilities in uv.lock; needs the network, so it is not a commit hook:
       # run by `make audit` and by CI (job "vulnerabilities", also weekly)
