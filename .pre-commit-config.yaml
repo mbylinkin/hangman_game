@@ -11,7 +11,7 @@ repos:
       - id: name-tests-test
         args: [--pytest-test-first]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.5
+    rev: v0.17.6
     hooks:
       - id: ruff-check
         args: [--fix]
@@ -78,7 +78,7 @@ repos:
       - id: typos
         args: []  # report only; the hook's default --write-changes would edit files silently
   - repo: https://github.com/rvben/rumdl-pre-commit
-    rev: v0.3.4
+    rev: v0.3.5
     hooks:
       - id: rumdl-check  # config in .rumdl.toml
         exclude: ^AGENTS\.md$  # symlink to CLAUDE.md, a plain file when core.symlinks=false
